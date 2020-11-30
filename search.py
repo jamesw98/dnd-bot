@@ -46,13 +46,17 @@ def get_search_results(query):
     res_type = res[0]
     json = res[1]
 
+    query = query.replace("-", " ")
+
     result_string = "Here's what I found:\n"
     result_string += "```" + query + "```"
 
-    query = query.replace("-", " ")
-
     if (json == None):
-        return "Sorry, but I couldn't find any results for: `" + query + "`"
+        sorry_res = "Sorry, but I couldn't find any results for: `" + query + "`"
+
+        if (" " in query):
+            sorry_res += "\nTry removing the space"
+        return sorry_res
 
     if (res_type == "spell"):
         result_string += build_spell_string(json)
