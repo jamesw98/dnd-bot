@@ -66,11 +66,19 @@ def build_spell_string(json, query) -> str:
 
     result_string += "```" + query + "```\nBase Attributes:"
     result_string += "\n```Level: " + spell_level + " | Range: " + json["range"] + "```\n"
-    result_string += "Damage:\n"
-    if (spell_level != "0"):
-        result_string += "```\nAt base level: " + json["damage"]["damage_at_slot_level"][spell_level] + " | Type: " + json["damage"]["damage_type"]["name"] + "```\n"
-    else:
-        result_string += "```\nAt character level 1: " + json["damage"]["damage_at_character_level"]["1"] + " | Type: " + json["damage"]["damage_type"]["name"] + "```\n"
+    
+    damage_string = ""
+    try: 
+        damage_string += "Damage:\n"
+        if (spell_level != "0"):
+            damage_string += "```\nAt base level: " + json["damage"]["damage_at_slot_level"][spell_level] + " | Type: " + json["damage"]["damage_type"]["name"] + "```\n"
+        else:
+            damage_string += "```\nAt character level 1: " + json["damage"]["damage_at_character_level"]["1"] + " | Type: " + json["damage"]["damage_type"]["name"] + "```\n"
+
+        result_string += damage_string
+    except:
+        pass
+
     result_string += "Description:\n```"
 
     for i in spell_desc:
