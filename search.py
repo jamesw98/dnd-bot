@@ -47,6 +47,7 @@ def get_search_results(query):
     json = res[1]
 
     result_string = "Here's what I found:\n"
+    result_string += "```" + query + "```"
 
     query = query.replace("-", " ")
 
@@ -54,17 +55,19 @@ def get_search_results(query):
         return "Sorry, but I couldn't find any results for: `" + query + "`"
 
     if (res_type == "spell"):
-        result_string += build_spell_string(json, query)
+        result_string += build_spell_string(json)
+    elif (res_type == "equipment"):
+        result_string += build_equipment_string(json)
 
     return(result_string)
 
 
-def build_spell_string(json, query) -> str:
+def build_spell_string(json) -> str:
     result_string = ""
     spell_level = str(json["level"])
     spell_desc = json["desc"]
 
-    result_string += "```" + query + "```\nBase Attributes:"
+    result_string += "\nAttributes:"
     result_string += "\n```Level: " + spell_level + " | Range: " + json["range"] + "```\n"
     
     damage_string = ""
@@ -86,4 +89,22 @@ def build_spell_string(json, query) -> str:
         result_string += " "
     
     result_string += "```"
+    return result_string
+
+def build_equipment_string(json) -> str:
+    result_string = ""
+    equip_type = json["equipment_category"]["name"]
+
+    result_string += "Equipment Type: ```" + equip_type + "```"
+
+    if (equip_type == "Armor"):
+        result_string += "Attributes: "
+        result_string += "\n```Armor Type: " + json["armor_category"] + " | Armor Class: " + str(json["armor_class"]["base"]) + "```"
+
+    elif (equip_type == "Weapon"):
+        result_string += "Attributes: "
+        result_string += "\n```Weapon Category: " + json["weapon_category"] + " | Range: " + json["weapon_range"] + "```"
+        result_string += "Damage:"
+        result_string += "\n```Damage Type: " + json["damage"]["damage_type"]["name"] + " | Damage Dice: " + json["damage"]["damage_dice"] + "```"
+
     return result_string
