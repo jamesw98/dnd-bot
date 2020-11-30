@@ -2,28 +2,53 @@ import os
 import random
 
 from validator import *
+from search import get_search_results
 
-INVALID_ROLL_FORMAT = "Invalid formatting"
+INVALID_FORMAT = "Invalid formatting"
 
 def parse(msg) -> str:
     cmd_list = msg.content[5:].lower().split(" ")
 
     if (cmd_list[0] == "roll"):
         return roll_dice(cmd_list[1:])
-    elif(cmd_list[0] == "help"):
+    elif (cmd_list[0] == "help"):
         return get_help()
+    elif (cmd_list[0] == "search"):
+        return search_helper(cmd_list[1:])
     else:
         return "[AC] Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
 
 # shows the help message
 def get_help() -> str:
-    return "```Adventure Companion v0.1\n Available Commands:\n- roll: rolls dice; formatting:\n    - <numDice>d<dieType> +/- <modifier>\n    - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage)\n    - d/a 1d20 + 10```"
+    res = "Adventure Companion v0.1\n"
+    res += "```- '!dnd help': shows this message\n"
+    res += "- '!dnd roll': rolls dice; formatting:\n"
+    res += "  - <numDice>d<dieType> +/- <modifier>\n"
+    res += "  - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage, can be used for any number/type of dice)\n"
+    res += "- '!dnd search <query>': searches for any spell (more options coming soon)```"
+    return res
+
+def search_helper(cmd_list) -> str:
+    if (len(cmd_list) < 1):
+        return INVALID_FORMAT + ", you must enter a value after 'search'"
+    
+    query = ""
+    if (len(cmd_list) > 1):
+        for i in range(len(cmd_list)):
+            query += cmd_list[i]
+            if (i != len(cmd_list) - 1):
+                query += "-"
+
+    else:
+        query = cmd_list[0]
+
+    return get_search_results(query)
 
 # parses the roll command and does error handling
 def roll_dice(cmd_list) -> str:
     # ensures they typed the command correctly
     if (len(cmd_list) < 1):
-        return INVALID_ROLL_FORMAT
+        return INVALID_FORMAT
 
     # makes sure the user formatted the first parameter correctly
     if (len(cmd_list[0].split("d")) > 1):
@@ -45,7 +70,7 @@ def roll_dice(cmd_list) -> str:
         # advantage value (n, a, d)
         advantage_val = "n"
 
-        # checks to see if users inputted a modifier
+        # checks to see if users inputed a modifier OR advantage/disadvantage
         if (len(cmd_list) > 1):
             advantage = False
             # gets the modifier type
@@ -60,24 +85,24 @@ def roll_dice(cmd_list) -> str:
                 advantage = True
                 advantage_val = "d"
             else:
-                # anything besides + or - is invalid
-                return INVALID_ROLL_FORMAT + ", invalid operation: `" + cmd_list[1] + "`"
+                # anything besides +, -, a, d is invalid
+                return INVALID_FORMAT + ", invalid operation: `" + cmd_list[1] + "`"
 
             # if the user inputted an operator, but no modifier
             if(len(cmd_list) < 3 and not advantage):
-                return INVALID_ROLL_FORMAT + ", operator exists, but no modifier"
+                return INVALID_FORMAT + ", operator exists, but no modifier"
             
             # checks to make sure the modifier is valid
             if (not advantage):
                 try:
                     modifier = int(cmd_list[2])
                 except:
-                    return INVALID_ROLL_FORMAT + ", modifier: `" + cmd_list[2] + "`"
+                    return INVALID_FORMAT + ", modifier: `" + cmd_list[2] + "`"
             
-        
+        # handle advantage or disadvantage
         if (len(cmd_list) == 4):
             if (cmd_list[3].lower() != 'a' and cmd_list[3].lower() != 'd'):
-                return INVALID_ROLL_FORMAT + ", invalid advantage/disadvantage: `" + cmd_list[3] + "`"
+                return INVALID_FORMAT + ", invalid advantage/disadvantage: `" + cmd_list[3] + "`"
             
             advantage_val = cmd_list[3].lower()
 
@@ -106,13 +131,11 @@ def roll_dice(cmd_list) -> str:
         return "You rolled a: " + str(value)
 
     else:
-        return INVALID_ROLL_FORMAT + "invalid roll type: `" + cmd_list[0] + "`"
+        return INVALID_FORMAT + "invalid roll type: `" + cmd_list[0] + "`"
 
 # rolls a set a of dice
 def roll(num_dice, die_type):
     value = 0
     for i in range(int(num_dice)):
-        temp_val = random.randint(1, int(die_type))
-        value += temp_val
-
+        value += random.randint(1, int(die_type))
     return value
