@@ -1,5 +1,5 @@
 # dnd-bot
-Adventurer Companion Discord bot, a DnD helper.  
+Adventurer Companion, a Dungeons and Dragons Discord bot.  
 You can add it to your server by visiting this link: https://top.gg/bot/782772961366507611 (at the moment, 11/30/2020, it is still being approved)
 
 # Current Features  
