@@ -17,5 +17,10 @@ You can add it to your server by visiting this link: https://top.gg/bot/78277296
   - start tracking initiative: `!dnd initiative start [name1]:[init#],[name2]:[init#],[name3]:[init#],...` (... start Volo:16,Strahd:18,Drizzt:20,jombles:1)
     - names and initiative numbers must be separated by colon characters ':'
     - there cannot be any spaces between the names
+  - cycle to next player in initiative: `!dnd initiative next`
   - stop tracking initiative: `!dnd initiative clear` 
   - note: `initiative` can be replace with `init` or `i` in all these commands
+- Re-run the last command. Assuming you have run a command with this bot, it will re-run the last command
+  - `!dnd`
+
+
