@@ -20,12 +20,12 @@ def parse(msg) -> str:
 
 # shows the help message
 def get_help() -> str:
-    res = "Adventure Companion v0.1\n"
+    res = "Adventure Companion v0.2\n"
     res += "```- '!dnd help': shows this message\n"
     res += "- '!dnd roll': rolls dice; formatting:\n"
     res += "  - <numDice>d<dieType> +/- <modifier>\n"
     res += "  - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage, can be used for any number/type of dice)\n"
-    res += "- '!dnd search <query>': searches for any spell (more options coming soon)```"
+    res += "- '!dnd search <query>': searches for any spell or equipment item (more options coming soon)```"
     return res
 
 def search_helper(cmd_list) -> str:

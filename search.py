@@ -1,3 +1,4 @@
+from messages import *
 import requests as rq
 
 EQUIP_URL = "https://www.dnd5eapi.co/api/equipment"
@@ -9,37 +10,28 @@ def search(query):
     results = None
     res_type = "none"
 
-    try:
-        rq.get(SPELLS_URL + "/" + query).json()['index']
+    if (rq.get(SPELLS_URL + "/" + query).status_code == 200):
         results =  rq.get(SPELLS_URL + "/" + query).json()
         res_type = "spell"
-    except:
-        pass
-
-    try:
-        rq.get(MI_URL + "/" + query).json()['index']
+        return [res_type, results]
+    
+    if (rq.get(MI_URL + "/" + query).status_code == 200):
         results =  rq.get(MI_URL + "/" + query).json()
         res_type = "magicitem"
-    except:
-        pass
+        return [res_type, results]
 
-    try:
-        rq.get(MONSTERS_URL + "/" + query).json()['index']
+    if (rq.get(MONSTERS_URL + "/" + query).status_code == 200):
         results =  rq.get(MONSTERS_URL + "/" + query).json()
         res_type = "monster"
-    except:
-        pass
+        return [res_type, results]
 
-    try:
-        rq.get(EQUIP_URL + "/" + query).json()['index']
+    if (rq.get(EQUIP_URL + "/" + query).status_code == 200):
         results =  rq.get(EQUIP_URL + "/" + query).json()
         res_type = "equipment"
-    except:
-        pass
+        return [res_type, results]
+
+    return [None, None]
     
-    return [res_type, results]
-
-
 def get_search_results(query):
     res = search(query.lower())
 
@@ -64,51 +56,3 @@ def get_search_results(query):
         result_string += build_equipment_string(json)
 
     return(result_string)
-
-
-def build_spell_string(json) -> str:
-    result_string = ""
-    spell_level = str(json["level"])
-    spell_desc = json["desc"]
-
-    result_string += "\nAttributes:"
-    result_string += "\n```Level: " + spell_level + " | Range: " + json["range"] + "```\n"
-    
-    damage_string = ""
-    try: 
-        damage_string += "Damage:\n"
-        if (spell_level != "0"):
-            damage_string += "```\nAt base level: " + json["damage"]["damage_at_slot_level"][spell_level] + " | Type: " + json["damage"]["damage_type"]["name"] + "```\n"
-        else:
-            damage_string += "```\nAt character level 1: " + json["damage"]["damage_at_character_level"]["1"] + " | Type: " + json["damage"]["damage_type"]["name"] + "```\n"
-
-        result_string += damage_string
-    except:
-        pass
-
-    result_string += "Description:\n```"
-
-    for i in spell_desc:
-        result_string += i
-        result_string += " "
-    
-    result_string += "```"
-    return result_string
-
-def build_equipment_string(json) -> str:
-    result_string = ""
-    equip_type = json["equipment_category"]["name"]
-
-    result_string += "Equipment Type: ```" + equip_type + "```"
-
-    if (equip_type == "Armor"):
-        result_string += "Attributes: "
-        result_string += "\n```Armor Type: " + json["armor_category"] + " | Armor Class: " + str(json["armor_class"]["base"]) + "```"
-
-    elif (equip_type == "Weapon"):
-        result_string += "Attributes: "
-        result_string += "\n```Weapon Category: " + json["weapon_category"] + " | Range: " + json["weapon_range"] + "```"
-        result_string += "Damage:"
-        result_string += "\n```Damage Type: " + json["damage"]["damage_type"]["name"] + " | Damage Dice: " + json["damage"]["damage_dice"] + "```"
-
-    return result_string
