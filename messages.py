@@ -1,3 +1,9 @@
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
+
+ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name in your database"
+
 # builds the discord message for a spell search
 def build_spell_string(json) -> str:
     result_string = ""
@@ -98,3 +104,32 @@ def build_init_message(init_list, curr_place) -> str:
         count += 1
 
     return res
+
+def build_character_message(character_name, user_id) -> str:
+    base_ref = db.reference("/users/" + str(user_id))
+
+    if (base_ref.child(character_name).get() == None):
+        return ERROR_CHARACTER_NOT_EXISTS
+
+    character = base_ref.child(character_name).get()
+
+    res = "Here's your character: **" + character["name"] + "**"
+    res += "\n```Level: " + character["lvl"] + " | HP: " + character["hp"] + " | AC: " + character["ac"] + "```"
+    res += "\n```Strength:     " + character["attributes"]["str"] + "   " + calc_modifier(int(character["attributes"]["str"]))
+    res += "\nDexterity:    " + character["attributes"]["dex"] + "   " + calc_modifier(int(character["attributes"]["dex"]))
+    res += "\nConstitution: " + character["attributes"]["con"] + "   " + calc_modifier(int(character["attributes"]["con"]))
+    res += "\nIntelligence: " + character["attributes"]["int"] + "   " + calc_modifier(int(character["attributes"]["int"]))
+    res += "\nWisdom:       " + character["attributes"]["wis"] + "   " + calc_modifier(int(character["attributes"]["wis"]))
+    res += "\nCharisma:     " + character["attributes"]["cha"] + "   " + calc_modifier(int(character["attributes"]["cha"])) + "```"
+
+    return res
+
+def calc_modifier(score) -> str:
+    mod = (score//2) - 5
+    
+    if (mod > 0):
+        return "+" + str(mod)
+    elif (mod < 0):
+        return "-" + str(mod)
+    else:
+        return " " + str(mod)

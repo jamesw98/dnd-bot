@@ -3,13 +3,14 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+from messages import build_character_message
+
 ERROR_CHARACTER_EXISTS = "You already have a character with that name in your database"
 
+INVALID_FORMAT_VIEW = "Invalid formatting, you didn't enter a name"
 INVALID_FORMAT_ADD = "Invalid formatting, make add matches the below formatting:\n```!dnd character add name level,hp,ac attributes (str, dex, con, int, wis, cha)``````!dnd character add Volo 3,25,13 8,10,16,18,13,20```"
 INVALID_FORMAT_ADD_BASE_ATTR = "Invalid formatting, something went wrong in your level,hp,ac fields"
 INVALID_FORMAT_ADD_STATS = "Invalid formatting, something went wrong in your stats fields"
-
-key = os.getenv("FIREBASE_KEY")
 
 cred = credentials.Certificate("secret/dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-66966.firebaseio.com/"})
@@ -17,6 +18,8 @@ firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-669
 def character_parse(cmd_list, author):
     if (cmd_list[0] == "add" or cmd_list[0] == "a"):
         return create_character_for_user(cmd_list[1:], author)
+    elif (cmd_list[0] == "view" or cmd_list[0] == "v"):
+        return view_character(cmd_list[1:], author)
 
 def create_character_for_user(cmd_list, author):
     if (len(cmd_list) != 3):
@@ -61,4 +64,9 @@ def create_character_for_user(cmd_list, author):
             }
     })
 
-    return "Success! Character added!"
+    return "Success! Character added!" + build_character_message(char_name, author.id)
+
+def view_character(cmd_list, author):
+    if (len(cmd_list) < 1):
+        return INVALID_FORMAT_VIEW
+    return build_character_message(cmd_list[0], author.id)
