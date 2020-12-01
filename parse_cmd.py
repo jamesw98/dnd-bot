@@ -15,7 +15,7 @@ def parse(msg) -> str:
         return roll_dice(cmd_list[1:])
     elif (cmd_list[0] == "help"): # display the help message
         return build_help_message()
-    elif (cmd_list[0] == "search" or cmd_list == "s"): # search for some dnd related text
+    elif (cmd_list[0] == "search" or cmd_list[0] == "s"): # search for some dnd related text
         return search_helper(cmd_list[1:])
     else:
         return "Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
@@ -102,7 +102,7 @@ def roll_dice(cmd_list) -> str:
 
         # user has advantage
         if (advantage_val == "a"):
-            value = min([roll(num_dice, die_type), roll(num_dice, die_type)])
+            value = max([roll(num_dice, die_type), roll(num_dice, die_type)])
 
         # user has disadvantage
         elif (advantage_val == "d"):
@@ -119,10 +119,10 @@ def roll_dice(cmd_list) -> str:
             value -= modifier
 
         # don't want to show negative or 0 to the user
-        if (value < 0):
+        if (value <= 0):
             value = "You rolled a: 1, oof"
 
-        return "You rolled a: " + str(value)
+        return "You rolled: " + str(value)
 
     else:
         return INVALID_FORMAT + "invalid roll type: `" + cmd_list[0] + "`"
