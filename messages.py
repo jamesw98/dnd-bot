@@ -1,3 +1,4 @@
+# builds the discord message for a spell search
 def build_spell_string(json) -> str:
     result_string = ""
     spell_level = str(json["level"])
@@ -27,6 +28,7 @@ def build_spell_string(json) -> str:
     result_string += "```"
     return result_string
 
+# builds the discord message for a equipment search
 def build_equipment_string(json) -> str:
     result_string = ""
     equip_type = json["equipment_category"]["name"]
@@ -45,6 +47,7 @@ def build_equipment_string(json) -> str:
 
     return result_string
 
+# builds the discord message for a monster search
 def  build_monster_string(json) -> str:
     result_string = ""
     
@@ -54,6 +57,7 @@ def  build_monster_string(json) -> str:
 
     return result_string
 
+# builds the discord message for a magic item search
 def build_magic_item_string(json) -> str:
     result_string = ""
     item_desc = json["desc"]
@@ -66,5 +70,15 @@ def build_magic_item_string(json) -> str:
         result_string += " "
 
     result_string += "```"
-    
+
     return result_string 
+
+# shows the help message
+def build_help_message() -> str:
+    res = "Adventure Companion v0.2\n"
+    res += "```- '!dnd help': shows this message\n"
+    res += "- '!dnd roll': rolls dice; formatting:\n"
+    res += "  - <numDice>d<dieType> +/- <modifier>\n"
+    res += "  - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage, can be used for any number/type of dice)\n"
+    res += "- '!dnd search <query>': searches for any spell, equipment, monster, or magic item```"
+    return res

@@ -2,43 +2,37 @@ import os
 import random
 
 from validator import *
+from messages import *
 from search import get_search_results
 
 INVALID_FORMAT = "Invalid formatting"
 
+# parses user messages 
 def parse(msg) -> str:
     cmd_list = msg.content[5:].lower().split(" ")
 
-    if (cmd_list[0] == "roll"):
+    if (cmd_list[0] == "roll" or cmd_list[0] == "r"): # roll some dice
         return roll_dice(cmd_list[1:])
-    elif (cmd_list[0] == "help"):
-        return get_help()
-    elif (cmd_list[0] == "search"):
+    elif (cmd_list[0] == "help"): # display the help message
+        return build_help_message()
+    elif (cmd_list[0] == "search" or cmd_list == "s"): # search for some dnd related text
         return search_helper(cmd_list[1:])
     else:
-        return "[AC] Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
-
-# shows the help message
-def get_help() -> str:
-    res = "Adventure Companion v0.2\n"
-    res += "```- '!dnd help': shows this message\n"
-    res += "- '!dnd roll': rolls dice; formatting:\n"
-    res += "  - <numDice>d<dieType> +/- <modifier>\n"
-    res += "  - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage, can be used for any number/type of dice)\n"
-    res += "- '!dnd search <query>': searches for any spell or equipment item (more options coming soon)```"
-    return res
+        return "Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
 
 def search_helper(cmd_list) -> str:
     if (len(cmd_list) < 1):
         return INVALID_FORMAT + ", you must enter a value after 'search'"
     
-    query = ""
+    # if the query contains spaces, convert the spaces to -'s
     if (len(cmd_list) > 1):
+        query = ""
         for i in range(len(cmd_list)):
             query += cmd_list[i]
             if (i != len(cmd_list) - 1):
                 query += "-"
 
+    # contained no spaces
     else:
         query = cmd_list[0]
 
