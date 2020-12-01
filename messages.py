@@ -75,10 +75,22 @@ def build_magic_item_string(json) -> str:
 
 # shows the help message
 def build_help_message() -> str:
-    res = "Adventure Companion v0.2\n"
-    res += "```- '!dnd help': shows this message\n"
-    res += "- '!dnd roll': rolls dice; formatting:\n"
+    res = "Adventure Companion v0.3\n"
+    res += "```'!dnd help': shows this message\n\n"
+    res += "'!dnd roll': rolls dice; formatting:\n"
     res += "  - <numDice>d<dieType> +/- <modifier>\n"
-    res += "  - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage, can be used for any number/type of dice)\n"
-    res += "- '!dnd search <query>': searches for any spell, equipment, monster, or magic item```"
+    res += "  - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage)\n\n"
+    res += "'!dnd search <query>': searches for any spell, equipment, monster, or magic item\n\n"
+
+    res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
+    return res
+
+def build_init_message(init_list) -> str:
+    count = 1
+    res = ""
+
+    for i in init_list:
+        res += "[" + str(count) + "]" + " " + i.name + "\n"
+        count += 1
+
     return res

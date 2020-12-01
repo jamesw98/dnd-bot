@@ -1,10 +1,13 @@
 import os
 import random
+import discord
 
 from validator import *
 from messages import *
 from search import get_search_results
+from init_tracker import init_parse
 
+INVALID_CHANNEL = "Sorry, this cannot be run in a public channel, please re-run this command in a direct message to me"
 INVALID_FORMAT = "Invalid formatting"
 
 # parses user messages 
@@ -17,9 +20,19 @@ def parse(msg) -> str:
         return build_help_message()
     elif (cmd_list[0] == "search" or cmd_list[0] == "s"): # search for some dnd related text
         return search_helper(cmd_list[1:])
+    elif (cmd_list[0] == "initiative" or cmd_list[0] == "init" or cmd_list[0] == "i"):
+        return init_helper(cmd_list[1:], msg)
     else:
         return "Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
 
+# helper for initiative
+def init_helper(cmd_list, msg):
+    if (not isinstance(msg.channel, discord.channel.DMChannel)):
+        return INVALID_CHANNEL
+    else:
+        return init_parse(cmd_list, msg.author)
+
+# helper for searching
 def search_helper(cmd_list) -> str:
     if (len(cmd_list) < 1):
         return INVALID_FORMAT + ", you must enter a value after 'search'"
