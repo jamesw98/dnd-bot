@@ -11,15 +11,14 @@ INVALID_FORMAT_ZERO_OR_NEGATIVE = "Invalid formatting, initiative number must be
 
 users_tracking_init = [] # list of users currently tracking init, just the usernames
 initiatives = {} # dict {"<discord id>:[array of Player objects]}
+current_initiatives = {}
 
 # parses command
 def init_parse(cmd_list, author):
     if (cmd_list[0] == "start" or cmd_list[0] == "s"):
         return start_init(cmd_list[1:], author)
     elif (cmd_list[0] == "next" or cmd_list[0] == "n"):
-        # TODO implement this
-        # cycle initative
-        pass
+        return cycle_init(author)
     elif (cmd_list[0] == "clear" or cmd_list[0] == "c"):
         return clear_init(author)
 
@@ -43,6 +42,9 @@ def start_init(cmd_list, author):
     users_tracking_init.append(author.id)
     # creates an empty list in the dictionary for this user
     initiatives[author.id] = []
+    # sets the first player in this user's initiative order to 
+    # be the current player with initiative
+    current_initiatives[author.id] = 1
 
     # loops through the players the user entered
     for p in player_list:
@@ -69,7 +71,7 @@ def start_init(cmd_list, author):
 
     # builds message
     result_string = "Done! Here is your current initiative:\n```"
-    result_string += build_init_message(initiatives[author.id])
+    result_string += build_init_message(initiatives[author.id], 1)
     result_string += "```"
 
     return result_string
@@ -81,8 +83,23 @@ def clear_init(author):
     
     users_tracking_init.remove(author.id)
     initiatives[author.id] = []
+    current_initiatives[author.id] = 0
 
     return "Done! Your initiative is cleared"
+
+def cycle_init(author):
+    result_string = ""
+
+    if ((current_initiatives[author.id]) + 1 > len(initiatives[author.id])):
+        current_initiatives[author.id] = 1
+    else: 
+        current_initiatives[author.id] += 1
+
+    result_string += "Here you go:\n```"
+    result_string += build_init_message(initiatives[author.id], current_initiatives[author.id])
+    result_string += "```"
+
+    return result_string
 
 class Player:
     def __init__(self, name, init_num):

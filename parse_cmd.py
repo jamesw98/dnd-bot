@@ -7,23 +7,39 @@ from messages import *
 from search import get_search_results
 from init_tracker import init_parse
 
+ERROR_NO_PREV_COMMAND = "You have not run a `!dnd` command yet!"
+
 INVALID_CHANNEL = "Sorry, this cannot be run in a public channel, please re-run this command in a direct message to me"
 INVALID_FORMAT = "Invalid formatting"
+
+last_cmd_for_user = {}
 
 # parses user messages 
 def parse(msg) -> str:
     cmd_list = msg.content[5:].lower().split(" ")
 
+    if (cmd_list[0] == ''):
+        return run_last_command(msg.author.id)
     if (cmd_list[0] == "roll" or cmd_list[0] == "r"): # roll some dice
+        last_cmd_for_user[msg.author.id] = msg
         return roll_dice(cmd_list[1:])
     elif (cmd_list[0] == "help"): # display the help message
+        last_cmd_for_user[msg.author.id] = msg
         return build_help_message()
     elif (cmd_list[0] == "search" or cmd_list[0] == "s"): # search for some dnd related text
+        last_cmd_for_user[msg.author.id] = msg
         return search_helper(cmd_list[1:])
     elif (cmd_list[0] == "initiative" or cmd_list[0] == "init" or cmd_list[0] == "i"):
+        last_cmd_for_user[msg.author.id] = msg
         return init_helper(cmd_list[1:], msg)
     else:
         return "Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
+
+def run_last_command(user_id):
+    try:
+        return parse(last_cmd_for_user[user_id])
+    except:
+        return ERROR_NO_PREV_COMMAND
 
 # helper for initiative
 def init_helper(cmd_list, msg):

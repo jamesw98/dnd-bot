@@ -85,12 +85,15 @@ def build_help_message() -> str:
     res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
     return res
 
-def build_init_message(init_list) -> str:
+def build_init_message(init_list, curr_place) -> str:
     count = 1
     res = ""
 
     for i in init_list:
-        res += "[" + str(count) + "]" + " " + i.name + "\n"
+        if (count == curr_place):
+            res += "> " + i.name + "\n"
+        else: 
+            res += "  " + i.name + "\n"
         count += 1
 
     return res
