@@ -4,8 +4,10 @@ import discord
 
 from validator import *
 from messages import *
+
 from search import get_search_results
 from init_tracker import init_parse
+from character_sheet import character_parse
 
 ERROR_NO_PREV_COMMAND = "You have not run a `!dnd` command yet!"
 
@@ -32,6 +34,9 @@ def parse(msg) -> str:
     elif (cmd_list[0] == "initiative" or cmd_list[0] == "init" or cmd_list[0] == "i"):
         last_cmd_for_user[msg.author.id] = msg
         return init_helper(cmd_list[1:], msg)
+    elif (cmd_list[0] == "character" or cmd_list[0] == "c"):
+        last_cmd_for_user[msg.author.id] = msg
+        return character_helper(cmd_list[1:], msg)
     else:
         return "Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
 
@@ -41,6 +46,12 @@ def run_last_command(user_id):
         return parse(last_cmd_for_user[user_id])
     except:
         return ERROR_NO_PREV_COMMAND
+
+def character_helper(cmd_list, msg):
+    if (not isinstance(msg.channel, discord.channel.DMChannel)):
+        return INVALID_CHANNEL
+    else:
+        return character_parse(cmd_list, msg.author)
 
 # helper for initiative
 def init_helper(cmd_list, msg):
@@ -163,3 +174,4 @@ def roll(num_dice, die_type):
     for i in range(int(num_dice)):
         value += random.randint(1, int(die_type))
     return value
+

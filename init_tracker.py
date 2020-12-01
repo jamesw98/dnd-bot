@@ -6,7 +6,7 @@ ERROR_NOT_TRACKING = "Invalid formatting, initiative number must be larger than 
 ERROR_NO_PLAYER = "No player was found with that name"
 ERROR_GOING_BELOW_TWO = "You cannot remove any more players, you have to have at least 2 players in initiative to track.\nIf you want to clear your initiative, type ```!dnd init clear```"
 
-INVALID_FORMAT_NO_CHARACTERS = "Invalid formatting, you did not include any characters after `init`.\nProper usage: ```!dnd init Volo:18,Strahd:12,Drizzt:10,jombles:1```"
+INVALID_FORMAT_NO_CHARACTERS = "Invalid formatting, you did not include any characters after `init`.\nProper usage: ```!dnd init start Volo:18,Strahd:12,Drizzt:10,jombles:1```"
 INVALID_FORMAT_ONE_CHARACTER = "Invalid formatting, there is only one character.\nI'm sure you can handle tracking one player without my help : )"
 INVALID_FORMAT_CHARACTER_MISSING_COLON = "Invalid formatting, missing a colon in character.\nYou are missing a colon between a character than their initiative number"
 INVALID_FORMAT_ZERO_OR_NEGATIVE = "Invalid formatting, initiative number must be larger than 0."
@@ -28,7 +28,7 @@ def init_parse(cmd_list, author):
         return clear_init(author)
     elif (cmd_list[0] == "remove" or cmd_list[0] == "r"):
         return remove_player(author, cmd_list)
-    elif (cmd_list[0] == "add" or cmd_list == "a"):
+    elif (cmd_list[0] == "add" or cmd_list[0] == "a"):
         return add_to_init(cmd_list[1:], author)
 
 # prints out the current initiative
@@ -124,6 +124,7 @@ def remove_player(author, cmd_list):
     
     return ERROR_NO_PLAYER
 
+# adds player(s) to the initiative
 def add_to_init(cmd_list, author):
     # makes sure the user is not already tracking
     if (author.id not in users_tracking_init):
@@ -149,6 +150,7 @@ def add_to_init(cmd_list, author):
     
     initiatives[author.id].sort(key=lambda p: p.init_num, reverse=True)
 
+    # makes sure the > stays in the right spot for the initiative list
     c = 1
     for p in initiatives[author.id]:
         if (p.name == player_name_current_init):
@@ -168,6 +170,7 @@ def clear_init(author):
 
     return "Done! Your initiative is cleared"
 
+# moves the > to the next player in initiative
 def cycle_init(author):
     result_string = ""
 
@@ -175,7 +178,7 @@ def cycle_init(author):
         current_initiatives[author.id] = 1
     else: 
         current_initiatives[author.id] += 1
-        
+
     return view_init(author)
 
 class Player:
