@@ -12,9 +12,9 @@ INVALID_FORMAT_CHARACTER_MISSING_COLON = "Invalid formatting, missing a colon in
 INVALID_FORMAT_ZERO_OR_NEGATIVE = "Invalid formatting, initiative number must be larger than 0."
 INVALID_FORMAT_NO_PLAYER = "Invalid formatting, no player was inputted"
 
-users_tracking_init = [] # list of users currently tracking init, just the usernames
+users_tracking_init = [] # list of users currently tracking init
 initiatives = {} # dict {"<discord id>:[array of Player objects]}
-current_initiatives = {}
+current_initiatives = {} # the current places in initiative for users
 
 # parses command
 def init_parse(cmd_list, author):
@@ -28,7 +28,10 @@ def init_parse(cmd_list, author):
         return clear_init(author)
     elif (cmd_list[0] == "remove" or cmd_list[0] == "r"):
         return remove_player(author, cmd_list)
+    elif (cmd_list[0] == "add" or cmd_list == "a"):
+        return add_to_init(cmd_list[1:], author)
 
+# prints out the current initiative
 def view_init(author):
     if (author.id not in users_tracking_init):
         return ERROR_NOT_TRACKING
@@ -115,15 +118,44 @@ def remove_player(author, cmd_list):
     ind = 0
     for player in initiatives[author.id]:
         if (player.name == player_name.lower()):
-            # if (player.place == current_initiatives[author.id]):
-                # current_initiatives[author.id] += 1
-
             del(initiatives[author.id][ind])
             return "Done! Removed player: " + player.name
         ind += 1
     
     return ERROR_NO_PLAYER
 
+def add_to_init(cmd_list, author):
+    # makes sure the user is not already tracking
+    if (author.id not in users_tracking_init):
+        return ERROR_NOT_TRACKING
+
+    # makes sure user ented some characters
+    if (len(cmd_list) == 0):
+        return INVALID_FORMAT_NO_CHARACTERS
+    
+    player_list = cmd_list[0].split(",")
+
+    current_init = current_initiatives[author.id]
+    player_name_current_init = initiatives[author.id][current_init].name
+
+    for p in player_list:
+        if (":" not in p):
+            return INVALID_FORMAT_CHARACTER_MISSING_COLON
+        
+        p_name = p.split(":")[0]
+        p_init = int(p.split(":")[1])
+
+        initiatives[author.id].append(Player(p_name, p_init))
+    
+    initiatives[author.id].sort(key=lambda p: p.init_num, reverse=True)
+
+    c = 1
+    for p in initiatives[author.id]:
+        if (p.name == player_name_current_init):
+            current_initiatives[author.id] = c - 1
+        c += 1
+
+    return view_init(author)
 
 # removes the user from init tracking and clears their list
 def clear_init(author):
@@ -143,15 +175,10 @@ def cycle_init(author):
         current_initiatives[author.id] = 1
     else: 
         current_initiatives[author.id] += 1
-
-    result_string += "Here you go:\n```"
-    result_string += build_init_message(initiatives[author.id], current_initiatives[author.id])
-    result_string += "```"
-
-    return result_string
+        
+    return view_init(author)
 
 class Player:
     def __init__(self, name, init_num):
         self.name = name
         self.init_num = init_num
-        self.place_in_init = 0
