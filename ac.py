@@ -12,6 +12,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
     print("AC Started")
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name="D&D | '!dnd help`"))
 
 @client.event
 async def on_message(msg):
