@@ -3,11 +3,14 @@ from messages import build_init_message
 
 ERROR_ALREADY_TRACKING = "You are already tracking initiative.\nIf you want to clear your existing initiative type: ```!dnd init clear```"
 ERROR_NOT_TRACKING = "Invalid formatting, initiative number must be larger than 0."
+ERROR_NO_PLAYER = "No player was found with that name"
+ERROR_GOING_BELOW_TWO = "You cannot remove any more players, you have to have at least 2 players in initiative to track.\nIf you want to clear your initiative, type ```!dnd init clear```"
 
 INVALID_FORMAT_NO_CHARACTERS = "Invalid formatting, you did not include any characters after `init`.\nProper usage: ```!dnd init Volo:18,Strahd:12,Drizzt:10,jombles:1```"
 INVALID_FORMAT_ONE_CHARACTER = "Invalid formatting, there is only one character.\nI'm sure you can handle tracking one player without my help : )"
 INVALID_FORMAT_CHARACTER_MISSING_COLON = "Invalid formatting, missing a colon in character.\nYou are missing a colon between a character than their initiative number"
 INVALID_FORMAT_ZERO_OR_NEGATIVE = "Invalid formatting, initiative number must be larger than 0."
+INVALID_FORMAT_NO_PLAYER = "Invalid formatting, no player was inputted"
 
 users_tracking_init = [] # list of users currently tracking init, just the usernames
 initiatives = {} # dict {"<discord id>:[array of Player objects]}
@@ -15,12 +18,27 @@ current_initiatives = {}
 
 # parses command
 def init_parse(cmd_list, author):
-    if (cmd_list[0] == "start" or cmd_list[0] == "s"):
+    if (len(cmd_list) < 1):
+        return view_init(author)
+    elif (cmd_list[0] == "start" or cmd_list[0] == "s"):
         return start_init(cmd_list[1:], author)
     elif (cmd_list[0] == "next" or cmd_list[0] == "n"):
         return cycle_init(author)
     elif (cmd_list[0] == "clear" or cmd_list[0] == "c"):
         return clear_init(author)
+    elif (cmd_list[0] == "remove" or cmd_list[0] == "r"):
+        return remove_player(author, cmd_list)
+
+def view_init(author):
+    if (author.id not in users_tracking_init):
+        return ERROR_NOT_TRACKING
+
+    result_string = ""
+    result_string += "Here you go:\n```"
+    result_string += build_init_message(initiatives[author.id], current_initiatives[author.id])
+    result_string += "```"
+
+    return result_string
 
 # starts tracking init for a user
 def start_init(cmd_list, author):
@@ -69,12 +87,43 @@ def start_init(cmd_list, author):
     # sorts the players based on their initiative numbers
     initiatives[author.id].sort(key=lambda p: p.init_num, reverse=True)
 
+    c = 1
+    for player in initiatives[author.id]:
+        player.place = c
+        c += 1
+
     # builds message
     result_string = "Done! Here is your current initiative:\n```"
     result_string += build_init_message(initiatives[author.id], 1)
     result_string += "```"
 
     return result_string
+
+# removes a player from a user's initiative list
+def remove_player(author, cmd_list):
+    if (author.id not in users_tracking_init):
+        return ERROR_NOT_TRACKING
+
+    if (len(cmd_list) == 1):
+        return INVALID_FORMAT_NO_PLAYER
+
+    player_name = cmd_list[1]
+
+    if (len(initiatives[author.id]) == 2):
+        return ERROR_GOING_BELOW_TWO
+    
+    ind = 0
+    for player in initiatives[author.id]:
+        if (player.name == player_name.lower()):
+            # if (player.place == current_initiatives[author.id]):
+                # current_initiatives[author.id] += 1
+
+            del(initiatives[author.id][ind])
+            return "Done! Removed player: " + player.name
+        ind += 1
+    
+    return ERROR_NO_PLAYER
+
 
 # removes the user from init tracking and clears their list
 def clear_init(author):
@@ -105,3 +154,4 @@ class Player:
     def __init__(self, name, init_num):
         self.name = name
         self.init_num = init_num
+        self.place_in_init = 0

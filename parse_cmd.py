@@ -35,6 +35,7 @@ def parse(msg) -> str:
     else:
         return "Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
 
+# re-runs the last command for a user
 def run_last_command(user_id):
     try:
         return parse(last_cmd_for_user[user_id])
