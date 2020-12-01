@@ -52,7 +52,6 @@ def get_search_results(query):
     result_string = "Here's what I found:\n"
     result_string += "```" + query + "```"
 
-
     if (res_type == "spell"):
         result_string += build_spell_string(json)
     elif (res_type == "equipment"):
@@ -60,10 +59,10 @@ def get_search_results(query):
 
     return(result_string)
 
-### This multi threaded implementation of this search is actually slightly slower than
+### This multi-threaded implementation of this search is actually slightly slower than
 ### the single threaded version, but it's still neat. 
-### If there was an O(1) way to check the futures, it would most likely be faster
-### or maybe a different pool implementation?
+### Mutlithreading is kind of overkill for this particular situation, but it was 
+### interesting to try it out
 
 def search_threaded(query):
     with concurrent.futures.ThreadPoolExecutor() as exe:
@@ -72,9 +71,17 @@ def search_threaded(query):
         monsters_future = exe.submit(search_monsters, query)
         equipment_future = exe.submit(search_equipment, query)
 
-        for future in [spell_future, magic_item_future, monsters_future, equipment_future]:
-            if (future != None):
-                return future.result()
+        if (spell_future.result() != None):
+            return spell_future.result()
+
+        if (equipment_future.result() != None):
+            return equipment_future.result()
+
+        if (magic_item_future.result() != None):
+            return magic_item_future.result()
+
+        if (monsters_future.result() != None):
+            return monsters_future.result()
 
         return None
 
