@@ -44,3 +44,27 @@ def build_equipment_string(json) -> str:
         result_string += "\n```Damage Type: " + json["damage"]["damage_type"]["name"] + " | Damage Dice: " + json["damage"]["damage_dice"] + "```"
 
     return result_string
+
+def  build_monster_string(json) -> str:
+    result_string = ""
+    
+    result_string += "Attributes:"
+    result_string += "\n```Size: " + json["size"] + " | Type: " + json["type"] + " | Speed: " + json["speed"]["walk"]
+    result_string += "\nArmor Class: " + str(json["armor_class"]) + " | Hit Points: " + str(json["hit_points"]) + " | Hit Dice: " + json["hit_dice"] + "```"
+
+    return result_string
+
+def build_magic_item_string(json) -> str:
+    result_string = ""
+    item_desc = json["desc"]
+
+    result_string += "Description:"
+    result_string += "\n```"
+
+    for i in item_desc:
+        result_string += i
+        result_string += " "
+
+    result_string += "```"
+    
+    return result_string 

@@ -56,6 +56,10 @@ def get_search_results(query):
         result_string += build_spell_string(json)
     elif (res_type == "equipment"):
         result_string += build_equipment_string(json)
+    elif (res_type == "monster"):
+        result_string += build_monster_string(json)
+    elif (res_type == "magicitem"):
+        result_string += build_magic_item_string(json)
 
     return(result_string)
 
