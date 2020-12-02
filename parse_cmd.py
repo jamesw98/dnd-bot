@@ -18,7 +18,7 @@ last_cmd_for_user = {}
 
 # parses user messages 
 def parse(msg) -> str:
-    cmd_list = msg.content[5:].lower().split(" ")
+    cmd_list = msg.content[5:].split(" ")
 
     if (cmd_list[0] == ''):
         return run_last_command(msg.author.id)

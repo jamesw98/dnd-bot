@@ -122,18 +122,88 @@ def build_character_message(character_name, user_id) -> str:
     res += "\nWisdom:       " + character["attributes"]["wis"] + "   " + calc_modifier(int(character["attributes"]["wis"]))
     res += "\nCharisma:     " + character["attributes"]["cha"] + "   " + calc_modifier(int(character["attributes"]["cha"])) + "```"
 
-    res += build_optional_character_message(character_name, user_id):
+    res += build_optional_character_message(character_name, user_id)
 
     return res
 
 def build_optional_character_message(character_name, user_id):
     base_ref = db.reference("/users/" + str(user_id))
 
+    res = ""
+
     # money check
+    money_found = False
+    money_res = "Money:```"
+    money_types = ["platinum", "gold", "silver", "copper"]
+    money_types_for_printing = ["Platinum", "Gold", "Silver", "Copper"]
+    
+    c = 0
+    for money in money_types:
+        temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/" + money + "/").get()
+        if (temp_res != None):
+            money_found = True
+            money_res += money_types_for_printing[c] + ": " + temp_res + "\n"
+        c += 1
+    money_res += "```"
 
     # notes check
+    notes_found = False
+    notes_res = "Notes:```"
 
-    # 
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/notes/").get()
+    if (temp_res != None):
+        notes_found = True
+        notes_res += temp_res
+    notes_res += "```"
+
+    # description check
+    desc_found = False
+    desc_res = "Description:```"
+
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/description/").get()
+    if (temp_res != None):
+        desc_found = True
+        desc_res += temp_res
+    desc_res += "```"
+
+    # alignment check
+    align_found = False
+    align_res = "Alignment:```"
+
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/alignment/").get()
+    if (temp_res != None):
+        align_found = True
+        align_res += temp_res
+    align_res += "```"
+
+    # image check
+    image_found = False
+    image_res = "Image:\n"
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/image/").get()
+    if (temp_res != None):
+        image_found = True
+        if ("http://" not in temp_res):
+            image_res += "http://" + temp_res
+        else:
+            image_res += temp_res
+    
+    # adds alignment message if alignment was found
+    if (align_found):
+        res += align_res
+    # adds money message if money was found
+    if (money_found):
+        res += money_res
+    # adds notes message if notes were found
+    if (notes_found):
+        res += notes_res
+    # adds description message if description was found
+    if (desc_found):
+        res += desc_res
+    # adds image if image was found
+    if (image_found):
+        res += image_res
+        
+    return res
 
 def calc_modifier(score) -> str:
     mod = (score//2) - 5

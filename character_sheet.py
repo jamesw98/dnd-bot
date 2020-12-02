@@ -15,6 +15,7 @@ INVALID_FORMAT_ADD = "Invalid formatting, make add matches the below formatting:
 INVALID_FORMAT_SET = "Invalid formatting, make add matches the below formatting:\n```!dnd character [character name] set [property name] [property]``````!dnd character Rich set image bit.ly/2L2kvgV```"
 INVALID_FORMAT_ADD_BASE_ATTR = "Invalid formatting, something went wrong in your level,hp,ac fields"
 INVALID_FORMAT_ADD_STATS = "Invalid formatting, something went wrong in your stats fields"
+INVALID_FORMAT_ALIGN = "Invalid formatting, you didn't enter a proper alignment\nMake sure it is 2 words separated by a space. ie. chaotic good, lawful evil, etc"
 
 VALID_PROPERTIES = ["image", "notes", "description", "alignment", "copper", "silver", "gold", "platinum"]
 
@@ -29,7 +30,7 @@ def character_parse(cmd_list, author):
         return view_character(cmd_list[1:], author)
     elif (len(cmd_list) > 2 and (cmd_list[1] == "set" or cmd_list[1] == "s")):
         return set_character_property(cmd_list[2:], author, cmd_list[0])
-    elif (cmd_list[0] == "list" or cmd_list[0] == ""):
+    elif (cmd_list[0] == "list" or cmd_list[0] == "l"):
         return list_helper(cmd_list[1:], author)
 
 # determines what kind of list to show
@@ -101,7 +102,7 @@ def create_character_for_user(cmd_list, author):
 # sets a property for a character
 def set_character_property(cmd_list, author, character_name):
     # makes sure input is proper
-    if (len(cmd_list) != 2):
+    if (len(cmd_list) < 2):
         return INVALID_FORMAT_SET
     
     base_ref = db.reference("/users/" + str(author.id))
@@ -111,18 +112,39 @@ def set_character_property(cmd_list, author, character_name):
         return ERROR_CHARACTER_NOT_EXISTS
     
     property_type = cmd_list[0].lower()
-    
+
     # makes sure the property they are trying to set is valid
     if (property_type not in VALID_PROPERTIES):
         return ERROR_INVALID_PROPERTY
-    
-    property_value = cmd_list[1]
 
     # sets the property
-    base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
-    base_ref.child(property_type).set(property_value)
+    if (property_type == "alignment"):
+        if (len(cmd_list) != 3):
+            return INVALID_FORMAT_ALIGN
+        
+        align_first = cmd_list[1]
+        align_second = cmd_list[2]
 
-    return "Success! Set " + property_type + " to `" + property_value + "` to character: `" + character_name + "`"
+        base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
+        base_ref.child(property_type).set(align_first + " " + align_second)
+        return "Success! Set " + property_type + " to `" + align_first + " " + align_second + "` to character: `" + character_name + "`"
+    elif (property_type == "description" or property_type == "notes"):
+        temp_res = ""
+        for prop in cmd_list[1:]:
+            temp_res += prop + " "  
+        
+        base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
+        base_ref.child(property_type).set(temp_res)
+
+        return "Success! Set property: `" + property_type + "`"
+    else:
+        property_value = cmd_list[1]
+
+        base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
+        base_ref.child(property_type).set(property_value)
+
+        return "Success! Set " + property_type + " to `" + property_value + "` to character: `" + character_name + "`"
+
 
 # displays character info
 def view_character(cmd_list, author):
