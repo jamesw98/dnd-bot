@@ -23,6 +23,11 @@ You can add it to your server by visiting this link: https://top.gg/bot/78277296
 - view initiative: `!dnd initiative`
 - stop tracking initiative: `!dnd initiative clear` 
 - note: `initiative` can be replace with `init` or `i` in all these commands
+### Character Sheets. (WIP)
+- add a character: `!dnd character add [name] [lvl],[hp],[ac] [attributes]` where attributes are: (str,dex,con,int,wis,cha)
+  - `!dnd character add Volo 3,25,13 8,10,16,18,13,20` note the space between lvl,hp,ac and the attributes
+- view a character: `!dnd character view [name]`
+- note: `character` can be replace with `c` in all these commands
 ### Re-run the last command
 - re-runs the last command `!dnd`
 
