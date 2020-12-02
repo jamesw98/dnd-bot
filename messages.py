@@ -115,14 +115,25 @@ def build_character_message(character_name, user_id) -> str:
 
     res = "Here's your character: **" + character["name"] + "**"
     res += "\n```Level: " + character["lvl"] + " | HP: " + character["hp"] + " | AC: " + character["ac"] + "```"
-    res += "\n```Strength:     " + character["attributes"]["str"] + "   " + calc_modifier(int(character["attributes"]["str"]))
+    res += "```Strength:     " + character["attributes"]["str"] + "   " + calc_modifier(int(character["attributes"]["str"]))
     res += "\nDexterity:    " + character["attributes"]["dex"] + "   " + calc_modifier(int(character["attributes"]["dex"]))
     res += "\nConstitution: " + character["attributes"]["con"] + "   " + calc_modifier(int(character["attributes"]["con"]))
     res += "\nIntelligence: " + character["attributes"]["int"] + "   " + calc_modifier(int(character["attributes"]["int"]))
     res += "\nWisdom:       " + character["attributes"]["wis"] + "   " + calc_modifier(int(character["attributes"]["wis"]))
     res += "\nCharisma:     " + character["attributes"]["cha"] + "   " + calc_modifier(int(character["attributes"]["cha"])) + "```"
 
+    res += build_optional_character_message(character_name, user_id):
+
     return res
+
+def build_optional_character_message(character_name, user_id):
+    base_ref = db.reference("/users/" + str(user_id))
+
+    # money check
+
+    # notes check
+
+    # 
 
 def calc_modifier(score) -> str:
     mod = (score//2) - 5
