@@ -129,7 +129,5 @@ def calc_modifier(score) -> str:
     
     if (mod > 0):
         return "+" + str(mod)
-    elif (mod < 0):
-        return "-" + str(mod)
     else:
         return " " + str(mod)
