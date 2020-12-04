@@ -17,7 +17,7 @@ INVALID_FORMAT_ADD_BASE_ATTR = "Invalid formatting, something went wrong in your
 INVALID_FORMAT_ADD_STATS = "Invalid formatting, something went wrong in your stats fields"
 INVALID_FORMAT_ALIGN = "Invalid formatting, you didn't enter a proper alignment\nMake sure it is 2 words separated by a space. ie. chaotic good, lawful evil, etc"
 
-VALID_PROPERTIES = ["image", "notes", "description", "alignment", "copper", "silver", "gold", "platinum"]
+VALID_PROPERTIES = ["race", "class", "image", "notes", "description", "alignment", "copper", "silver", "gold", "platinum"]
 
 cred = credentials.Certificate("secret/dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-66966.firebaseio.com/"})
@@ -100,6 +100,7 @@ def create_character_for_user(cmd_list, author):
     return "Success! Character added!\n" + build_character_message(char_name, author.id)
 
 # sets a property for a character
+# TODO redunant code here, refactor 
 def set_character_property(cmd_list, author, character_name):
     # makes sure input is proper
     if (len(cmd_list) < 2):
@@ -143,8 +144,11 @@ def set_character_property(cmd_list, author, character_name):
         base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
         base_ref.child(property_type).set(property_value)
 
-        return "Success! Set " + property_type + " to `" + property_value + "` to character: `" + character_name + "`"
+        return "Success! Set " + property_type + " to `" + property_value + "` for character: `" + character_name + "`"
 
+# TODO implement this
+def remove_character(cmd_list, author):
+    pass
 
 # displays character info
 def view_character(cmd_list, author):

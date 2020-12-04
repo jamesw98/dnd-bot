@@ -9,6 +9,15 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 client = discord.Client()
 
+# Things todo:
+# TODO implement character remove
+# TODO implement character help message
+# TODO implement initiative help message
+# TODO consider health tracking with init tracking
+#        string format()? have HP print before character name?
+# TODO unit tests
+# TODO github actions with unit tests
+
 @client.event
 async def on_ready():
     print("AC Started")

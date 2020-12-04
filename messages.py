@@ -126,11 +126,30 @@ def build_character_message(character_name, user_id) -> str:
 
     return res
 
+# TODO refactor this, some redundant code
 def build_optional_character_message(character_name, user_id):
     base_ref = db.reference("/users/" + str(user_id))
 
     res = ""
 
+    # race and class check
+    race_and_class_res = "```"
+    race_found = class_found = False
+
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/race/").get()
+    if (temp_res != None):
+        race_found = True
+        race_and_class_res += "Race: " + temp_res
+
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/class/").get()
+    if (temp_res != None):
+        class_found = True
+        if (race_found):
+            race_and_class_res += " | Class: " + temp_res
+        else:
+            race_and_class_res += "Class: " + temp_res
+    race_and_class_res += "```"
+        
     # money check
     money_found = False
     money_res = "Money:```"
@@ -146,35 +165,24 @@ def build_optional_character_message(character_name, user_id):
         c += 1
     money_res += "```"
 
-    # notes check
-    notes_found = False
+    options = ["notes", "description", "alignment"]
+
     notes_res = "Notes:```"
-
-    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/notes/").get()
-    if (temp_res != None):
-        notes_found = True
-        notes_res += temp_res
-    notes_res += "```"
-
-    # description check
-    desc_found = False
     desc_res = "Description:```"
-
-    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/description/").get()
-    if (temp_res != None):
-        desc_found = True
-        desc_res += temp_res
-    desc_res += "```"
-
-    # alignment check
-    align_found = False
     align_res = "Alignment:```"
+    options_res = [notes_res, desc_res, align_res]
 
-    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/alignment/").get()
-    if (temp_res != None):
-        align_found = True
-        align_res += temp_res
-    align_res += "```"
+    notes_found = desc_found = align_found = False
+    option_found = [notes_found, desc_found, align_found]
+    
+    c = 0
+    for o in options:
+        temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/" + options[c] +"/").get()
+        if (temp_res != None):
+            option_found[c] = True
+            options_res[c] += temp_res
+        options_res[c] += "```"
+        c += 1
 
     # image check
     image_found = False
@@ -188,17 +196,19 @@ def build_optional_character_message(character_name, user_id):
             image_res += temp_res
     
     # adds alignment message if alignment was found
-    if (align_found):
-        res += align_res
+    if (race_found or class_found):
+        res += race_and_class_res
+    if (option_found[2]):
+        res += options_res[2]
     # adds money message if money was found
     if (money_found):
         res += money_res
     # adds notes message if notes were found
-    if (notes_found):
-        res += notes_res
+    if (option_found[0]):
+        res += options_res[0]
     # adds description message if description was found
-    if (desc_found):
-        res += desc_res
+    if (option_found[1]):
+        res += options_res[1]
     # adds image if image was found
     if (image_found):
         res += image_res
