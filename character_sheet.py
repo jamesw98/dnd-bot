@@ -5,11 +5,13 @@ from firebase_admin import db
 
 from messages import build_character_message
 
+# error messages
 ERROR_CHARACTER_EXISTS = "You already have a character with that name in your database"
 ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name"
 ERROR_INVALID_PROPERTY = "You entered an invalid property.\nTo view valid properties type:```!dnd character list props```"
 ERROR_INVALID_LIST = "I'm not sure what you are trying to list. To view character help type:```!dnd character help```"
 
+# invalid format warnings
 INVALID_FORMAT_VIEW = "Invalid formatting, you didn't enter a name"
 INVALID_FORMAT_ADD = "Invalid formatting, make add matches the below formatting:\n```!dnd character add name level,hp,ac attributes (str, dex, con, int, wis, cha)``````!dnd character add Volo 3,25,13 8,10,16,18,13,20```"
 INVALID_FORMAT_SET = "Invalid formatting, make add matches the below formatting:\n```!dnd character [character name] set [property name] [property]``````!dnd character Rich set image bit.ly/2L2kvgV```"
@@ -19,19 +21,26 @@ INVALID_FORMAT_ALIGN = "Invalid formatting, you didn't enter a proper alignment\
 
 VALID_PROPERTIES = ["race", "class", "image", "notes", "description", "alignment", "copper", "silver", "gold", "platinum"]
 
-cred = credentials.Certificate("secret/dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
+cred = credentials.Certificate("dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-66966.firebaseio.com/"})
 
 # parses the character command
 def character_parse(cmd_list, author):
+    # user wants to add a character
     if (cmd_list[0] == "add" or cmd_list[0] == "a"):
         return create_character_for_user(cmd_list[1:], author)
+    # user wants to view their characters
     elif (cmd_list[0] == "view" or cmd_list[0] == "v"):
         return view_character(cmd_list[1:], author)
+    # user wants to set a property for one of their characters
     elif (len(cmd_list) > 2 and (cmd_list[1] == "set" or cmd_list[1] == "s")):
         return set_character_property(cmd_list[2:], author, cmd_list[0])
+    # user wants to list their characters or the property list
     elif (cmd_list[0] == "list" or cmd_list[0] == "l"):
         return list_helper(cmd_list[1:], author)
+    # user wants to remove one of their characters
+    elif (cmd_list[0] == "remove" or cmd_list[0] == "r"):
+        pass # to be implemented
 
 # determines what kind of list to show
 def list_helper(cmd_list, author):
@@ -100,12 +109,12 @@ def create_character_for_user(cmd_list, author):
     return "Success! Character added!\n" + build_character_message(char_name, author.id)
 
 # sets a property for a character
-# TODO redunant code here, refactor 
 def set_character_property(cmd_list, author, character_name):
     # makes sure input is proper
     if (len(cmd_list) < 2):
         return INVALID_FORMAT_SET
     
+    # gets the base ref for the user runnning the command
     base_ref = db.reference("/users/" + str(author.id))
 
     # makes sure character exists
@@ -118,33 +127,42 @@ def set_character_property(cmd_list, author, character_name):
     if (property_type not in VALID_PROPERTIES):
         return ERROR_INVALID_PROPERTY
 
-    # sets the property
+    # alignments are a special case, they should be 2 words 
+    # separated by a space
     if (property_type == "alignment"):
         if (len(cmd_list) != 3):
             return INVALID_FORMAT_ALIGN
         
-        align_first = cmd_list[1]
-        align_second = cmd_list[2]
+        align_first = cmd_list[1] # get the first word
+        align_second = cmd_list[2] # get the second
 
-        base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
-        base_ref.child(property_type).set(align_first + " " + align_second)
+        # modifies the property for the character
+        modify_db_char_property(property_type, author, character_name, align_first + " " + align_second)
+
         return "Success! Set " + property_type + " to `" + align_first + " " + align_second + "` to character: `" + character_name + "`"
+    # description and notes are also special, since they can contain spaces
     elif (property_type == "description" or property_type == "notes"):
         temp_res = ""
         for prop in cmd_list[1:]:
-            temp_res += prop + " "  
+            temp_res += prop + " "
         
-        base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
-        base_ref.child(property_type).set(temp_res)
+        # modifies the property for the character
+        modify_db_char_property(property_type, author, character_name, temp_res)
 
         return "Success! Set property: `" + property_type + "`"
+    # everything else should be handled here
     else:
         property_value = cmd_list[1]
 
-        base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
-        base_ref.child(property_type).set(property_value)
+        # modifies the property for the character
+        modify_db_char_property(property_type, author, character_name, property_value)  
 
         return "Success! Set " + property_type + " to `" + property_value + "` for character: `" + character_name + "`"
+
+# helper for the above function
+def modify_db_char_property(property_type, author, character_name, property_value):
+    base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
+    base_ref.child(property_type).set(property_value)
 
 # TODO implement this
 def remove_character(cmd_list, author):
@@ -156,6 +174,7 @@ def view_character(cmd_list, author):
         return INVALID_FORMAT_VIEW
     return build_character_message(cmd_list[0], author.id)
 
+# builds the property message 
 def build_property_message():
     c = 0
     res = "```"
@@ -168,6 +187,7 @@ def build_property_message():
     res += "```"
     return res
 
+# builds the character list message
 def build_character_list_message(char_list):
     c = 0
     res = "```"
