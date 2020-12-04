@@ -14,7 +14,8 @@ You can add it to your server by visiting this link: https://top.gg/bot/78277296
 - `!dnd search [query]`
 - note: `search` can be replaced with `s`
 ### Initiative Tracking.
-- start tracking initiative: `!dnd initiative start [name1]:[init#],[name2]:[init#],[name3]:[init#],...` (... start Volo:16,Strahd:18,Drizzt:20,jombles:1)
+- start tracking initiative: `!dnd initiative start [name1]:[init#],[name2]:[init#],[name3]:[init#],...` 
+  - example: `!dnd initiative start volo:12,drizzt:18,strahd:22,tav:3`
   - names and initiative numbers must be separated by colon characters ':'
   - there cannot be any spaces between the names
 - cycle to next player in initiative: `!dnd initiative next`
