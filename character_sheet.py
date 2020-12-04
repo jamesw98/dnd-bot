@@ -4,17 +4,19 @@ from firebase_admin import credentials
 from firebase_admin import db
 
 from messages import build_character_message
-
+from messages import build_character_help_message
 # error messages
 ERROR_CHARACTER_EXISTS = "You already have a character with that name in your database"
 ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name"
 ERROR_INVALID_PROPERTY = "You entered an invalid property.\nTo view valid properties type:```!dnd character list props```"
 ERROR_INVALID_LIST = "I'm not sure what you are trying to list. To view character help type:```!dnd character help```"
+ERROR_INVALID_COMMAND = "Sorry, that character command doesn't exist!\nType `!dnd character help` to view commands"
 
 # invalid format warnings
 INVALID_FORMAT_VIEW = "Invalid formatting, you didn't enter a name"
 INVALID_FORMAT_ADD = "Invalid formatting, make add matches the below formatting:\n```!dnd character add name level,hp,ac attributes (str, dex, con, int, wis, cha)``````!dnd character add Volo 3,25,13 8,10,16,18,13,20```"
 INVALID_FORMAT_SET = "Invalid formatting, make add matches the below formatting:\n```!dnd character [character name] set [property name] [property]``````!dnd character Rich set image bit.ly/2L2kvgV```"
+INVALID_FORMAT_REMOVE = "Invalid formatting, you need to enter a character to remove:\n```!dnd character remove [character name]```"
 INVALID_FORMAT_ADD_BASE_ATTR = "Invalid formatting, something went wrong in your level,hp,ac fields"
 INVALID_FORMAT_ADD_STATS = "Invalid formatting, something went wrong in your stats fields"
 INVALID_FORMAT_ALIGN = "Invalid formatting, you didn't enter a proper alignment\nMake sure it is 2 words separated by a space. ie. chaotic good, lawful evil, etc"
@@ -40,7 +42,12 @@ def character_parse(cmd_list, author):
         return list_helper(cmd_list[1:], author)
     # user wants to remove one of their characters
     elif (cmd_list[0] == "remove" or cmd_list[0] == "r"):
-        pass # to be implemented
+        return remove_character(cmd_list[1:], author)
+    # user wants to view the help message
+    elif (cmd_list[0] == "help" or cmd_list[0] == "h"):
+        return build_character_help_message()
+    else:
+        return ERROR_INVALID_COMMAND
 
 # determines what kind of list to show
 def list_helper(cmd_list, author):
@@ -164,9 +171,23 @@ def modify_db_char_property(property_type, author, character_name, property_valu
     base_ref = db.reference("/users/" + str(author.id) + "/" + character_name)
     base_ref.child(property_type).set(property_value)
 
-# TODO implement this
+# remove a character from a user's list
 def remove_character(cmd_list, author):
-    pass
+    base_ref = db.reference("/users/" + str(author.id))
+
+    # ensures valid formatting
+    if (len(cmd_list) == 0):
+        return INVALID_FORMAT_REMOVE
+    
+    character_name = cmd_list[0]
+
+    # ensures the character exists
+    if (base_ref.child(character_name).get() == None):
+        return ERROR_CHARACTER_NOT_EXISTS
+
+    db.reference("/users/" + str(author.id) + "/" + character_name + "/").delete()
+
+    return "Success! Your character: " + character_name + " has been removed"
 
 # displays character info
 def view_character(cmd_list, author):

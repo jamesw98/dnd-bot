@@ -3,6 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 
 ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name in your database"
+VERSION = "v0.4"
 
 # builds the discord message for a spell search
 def build_spell_string(json) -> str:
@@ -81,14 +82,24 @@ def build_magic_item_string(json) -> str:
 
 # shows the help message
 def build_help_message() -> str:
-    res = "Adventure Companion v0.4\n"
+    res = "Adventure Companion " + VERSION
     res += "```'!dnd help': shows this message\n\n"
     res += "'!dnd roll': rolls dice; formatting:\n"
-    res += "  - <numDice>d<dieType> +/- <modifier>\n"
+    res += "  - [numDice]d[dieType] +/- [modifier]\n"
     res += "  - 1d20 + 2 d/a (rolls 1d20 at disadvantage/advantage)\n\n"
-    res += "'!dnd search <query>': searches for any spell, equipment, monster, or magic item\n\n"
+    res += "'!dnd search [query]': searches for any spell, equipment, monster, or magic item\n\n"
     res += "'!dnd initiative (start, next, add, remove)`: for full documentation, see the github repo below\n\n"
     res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
+    return res
+
+def build_character_help_message() -> str:
+    res = "Adventure Companion " + VERSION + "Character Help"
+    res += "```'!dnd character help': shows this message\n\n"
+    res += "'!dnd c list': lists the characters available to you\n"
+    res += "'!dnd c list properties': lists the properties you are able to set for any characters\n\n"
+    res += "'!dnd c add [name] lvl,hp,ac str,dex,con,int,wis,cha: adds a character\n(note the space between ...,ac and str,dex,...)\n\n"
+    res += "'!dnd c [name] set [property name] [property value]: sets a property for a character\n(for notes, description, and alignment, spaces are allowed)\n\n"
+    res += "'!dnd c remove [name]: removes a character from your list"
     return res
 
 # builds the initiative message

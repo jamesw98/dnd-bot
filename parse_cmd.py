@@ -12,7 +12,7 @@ from character_sheet import character_parse
 ERROR_NO_PREV_COMMAND = "You have not run a `!dnd` command yet!"
 
 INVALID_CHANNEL = "Sorry, this cannot be run in a public channel, please re-run this command in a direct message to me"
-INVALID_FORMAT = "Invalid formatting"
+INVALID_FORMAT = "Invalid formatting, you must enter valid die roll"
 
 last_cmd_for_user = {}
 
@@ -38,7 +38,7 @@ def parse(msg) -> str:
         last_cmd_for_user[msg.author.id] = msg
         return character_helper(cmd_list[1:], msg)
     else:
-        return "Sorry, that command doesn't exist!\nType '!dnd help' to view commands"
+        return "Sorry, that command doesn't exist!\nType `!dnd help` to view commands"
 
 # re-runs the last command for a user
 def run_last_command(user_id):
