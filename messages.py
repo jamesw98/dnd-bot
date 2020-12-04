@@ -93,13 +93,27 @@ def build_help_message() -> str:
     return res
 
 def build_character_help_message() -> str:
-    res = "Adventure Companion " + VERSION + "Character Help"
+    res = "Adventure Companion " + VERSION + " Character Help"
     res += "```'!dnd character help': shows this message\n\n"
     res += "'!dnd c list': lists the characters available to you\n"
     res += "'!dnd c list properties': lists the properties you are able to set for any characters\n\n"
     res += "'!dnd c add [name] lvl,hp,ac str,dex,con,int,wis,cha: adds a character\n(note the space between ...,ac and str,dex,...)\n\n"
     res += "'!dnd c [name] set [property name] [property value]: sets a property for a character\n(for notes, description, and alignment, spaces are allowed)\n\n"
     res += "'!dnd c remove [name]: removes a character from your list"
+    res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
+    return res
+
+def build_init_help_message() -> str:
+    res = "Adventure Companion " + VERSION + " Initiative Help"
+    res += "```'!dnd initiative help': shows this message\n\n"
+    res += "'!dnd init start [name1]:[init#],[name2]:[init#],[name3]:[init#],...`: starts tracking initiative\n"
+    res += " ex: '!dnd initiative start volo:12,drizzt:18,strahd:22,tav:3'\n\n"
+    res += "'!dnd init next': cycles to the next player in initiative\n\n"
+    res += "'!dnd remove [name]': removes the player from initiative tracking\n\n"
+    res += "'!dnd init add [name1]:[init#],[name2]:[init#],...': adds player(s) to the intiative\n\n"
+    res += "'!dnd init': view the current initiative order\n\n"
+    res += "'!dnd init clear': clears the initiative and stops tracking\n\n"
+    res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
     return res
 
 # builds the initiative message
@@ -233,3 +247,4 @@ def calc_modifier(score) -> str:
         return "+" + str(mod)
     else:
         return " " + str(mod)
+        

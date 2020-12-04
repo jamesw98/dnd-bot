@@ -1,5 +1,6 @@
 import discord
 from messages import build_init_message
+from messages import build_init_help_message
 
 ERROR_ALREADY_TRACKING = "You are already tracking initiative.\nIf you want to clear your existing initiative type: ```!dnd init clear```"
 ERROR_NOT_TRACKING = "Invalid formatting, initiative number must be larger than 0."
@@ -30,6 +31,8 @@ def init_parse(cmd_list, author):
         return remove_player(author, cmd_list)
     elif (cmd_list[0] == "add" or cmd_list[0] == "a"):
         return add_to_init(cmd_list[1:], author)
+    elif (cmd_list[0] == "help" or cmd_list[0] == "h"):
+        return build_init_help_message()
 
 # prints out the current initiative
 def view_init(author):
