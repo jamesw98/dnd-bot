@@ -8,6 +8,7 @@ MI_URL = "https://www.dnd5eapi.co/api/magic-items"
 MONSTERS_URL = "https://www.dnd5eapi.co/api/monsters"
 SPELLS_URL = "https://www.dnd5eapi.co/api/spells"
 
+# searches the dnd api for a query
 def search(query):
     results = None
     res_type = "none"
@@ -80,6 +81,10 @@ def get_search_results(query):
 ### the single threaded version, but it's still neat. 
 ### Mutlithreading is kind of overkill for this particular situation, but it was 
 ### interesting to try it out
+### I could probably improve it by doing thread creation and joining myself, but 
+### at the moment, I am going to continue adding new features to the bot, and since
+### seaches come back in less than a second, I don't think performance is that big of
+### a problem
 
 def search_threaded(query):
     with concurrent.futures.ThreadPoolExecutor() as exe:

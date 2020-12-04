@@ -2,11 +2,13 @@ import discord
 from messages import build_init_message
 from messages import build_init_help_message
 
+# error messages
 ERROR_ALREADY_TRACKING = "You are already tracking initiative.\nIf you want to clear your existing initiative type: ```!dnd init clear```"
 ERROR_NOT_TRACKING = "Invalid formatting, initiative number must be larger than 0."
 ERROR_NO_PLAYER = "No player was found with that name"
 ERROR_GOING_BELOW_TWO = "You cannot remove any more players, you have to have at least 2 players in initiative to track.\nIf you want to clear your initiative, type ```!dnd init clear```"
 
+# invalid format warnings
 INVALID_FORMAT_NO_CHARACTERS = "Invalid formatting, you did not include any characters after `init`.\nProper usage: ```!dnd init start Volo:18,Strahd:12,Drizzt:10,jombles:1```"
 INVALID_FORMAT_ONE_CHARACTER = "Invalid formatting, there is only one character.\nI'm sure you can handle tracking one player without my help : )"
 INVALID_FORMAT_CHARACTER_MISSING_COLON = "Invalid formatting, missing a colon in character.\nYou are missing a colon between a character than their initiative number"
@@ -93,6 +95,7 @@ def start_init(cmd_list, author):
     # sorts the players based on their initiative numbers
     initiatives[author.id].sort(key=lambda p: p.init_num, reverse=True)
 
+    # sets each player's plcae in the initiative order
     c = 1
     for player in initiatives[author.id]:
         player.place = c
@@ -184,6 +187,7 @@ def cycle_init(author):
 
     return view_init(author)
 
+# basic class to hold info about a player in the initiative 
 class Player:
     def __init__(self, name, init_num):
         self.name = name

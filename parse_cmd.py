@@ -20,23 +20,30 @@ last_cmd_for_user = {}
 def parse(msg) -> str:
     cmd_list = msg.content[5:].split(" ")
 
+    # runs the last command the user ran, if they have a last run command
     if (cmd_list[0] == ''):
         return run_last_command(msg.author.id)
-    if (cmd_list[0] == "roll" or cmd_list[0] == "r"): # roll some dice
+    # user wants to roll some dice
+    if (cmd_list[0] == "roll" or cmd_list[0] == "r"): 
         last_cmd_for_user[msg.author.id] = msg
         return roll_dice(cmd_list[1:])
-    elif (cmd_list[0] == "help"): # display the help message
+    # user wants to view the help message
+    elif (cmd_list[0] == "help"): 
         last_cmd_for_user[msg.author.id] = msg
         return build_help_message()
-    elif (cmd_list[0] == "search" or cmd_list[0] == "s"): # search for some dnd related text
+    # user wants to search for some dnd related text
+    elif (cmd_list[0] == "search" or cmd_list[0] == "s"): 
         last_cmd_for_user[msg.author.id] = msg
         return search_helper(cmd_list[1:])
+    # user wants to do something with initiative tracking
     elif (cmd_list[0] == "initiative" or cmd_list[0] == "init" or cmd_list[0] == "i"):
         last_cmd_for_user[msg.author.id] = msg
         return init_helper(cmd_list[1:], msg)
+    # user wants to do something with characters
     elif (cmd_list[0] == "character" or cmd_list[0] == "c"):
         last_cmd_for_user[msg.author.id] = msg
         return character_helper(cmd_list[1:], msg)
+    # user wants to do something that the bot can't do 
     else:
         return "Sorry, that command doesn't exist!\nType `!dnd help` to view commands"
 
@@ -47,6 +54,7 @@ def run_last_command(user_id):
     except:
         return ERROR_NO_PREV_COMMAND
 
+# helper for characters
 def character_helper(cmd_list, msg):
     if (not isinstance(msg.channel, discord.channel.DMChannel)):
         return INVALID_CHANNEL

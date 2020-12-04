@@ -3,7 +3,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 
 ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name in your database"
-VERSION = "v0.4"
+VERSION = "v0.05"
 
 # builds the discord message for a spell search
 def build_spell_string(json) -> str:
