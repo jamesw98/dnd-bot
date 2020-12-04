@@ -1,6 +1,6 @@
 # dnd-bot
 Adventurer Companion, a Dungeons and Dragons Discord bot.  
-You can add it to your server by visiting this link: https://top.gg/bot/782772961366507611 (at the moment, 11/30/2020, it is still being approved)
+You can add it to your server by visiting this link: https://top.gg/bot/782772961366507611 (at the moment, 12/4, it is still being approved)
 
 ## Current Features  
 ### Help command. 
@@ -14,7 +14,8 @@ You can add it to your server by visiting this link: https://top.gg/bot/78277296
 - `!dnd search [query]`
 - note: `search` can be replaced with `s`
 ### Initiative Tracking.
-- start tracking initiative: `!dnd initiative start [name1]:[init#],[name2]:[init#],[name3]:[init#],...` (... start Volo:16,Strahd:18,Drizzt:20,jombles:1)
+- start tracking initiative: `!dnd initiative start [name1]:[init#],[name2]:[init#],[name3]:[init#],...` 
+  - example: `!dnd initiative start volo:12,drizzt:18,strahd:22,tav:3`
   - names and initiative numbers must be separated by colon characters ':'
   - there cannot be any spaces between the names
 - cycle to next player in initiative: `!dnd initiative next`
@@ -31,6 +32,7 @@ You can add it to your server by visiting this link: https://top.gg/bot/78277296
   - `!dnd character volo set image bit.ly/2L2kvgV`
   - `!dnd character volo set gold 100`
   - `!dnd character volo set notes "these are some notes about the character, be sure to encose them in quotes"`
+- remove a character from your list: `!dnd character remove [name]`
 - view all characters: `!dnd character list`
 - view valid properties: `!dnd character list properties`
 - view help for character commands: `!dnd character help`
