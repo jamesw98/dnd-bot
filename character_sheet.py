@@ -5,6 +5,9 @@ from firebase_admin import db
 
 from messages import build_character_message
 from messages import build_character_help_message
+
+from embed_builder import *
+
 # error messages
 ERROR_CHARACTER_EXISTS = "You already have a character with that name in your database"
 ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name"
@@ -113,7 +116,7 @@ def create_character_for_user(cmd_list, author):
             }
     })
 
-    return "Success! Character added!\n" + build_character_message(char_name, author.id)
+    return "Success! Character added!\nType `!dnd character view " + char_name + "` to view them"
 
 # sets a property for a character
 def set_character_property(cmd_list, author, character_name):
@@ -193,7 +196,14 @@ def remove_character(cmd_list, author):
 def view_character(cmd_list, author):
     if (len(cmd_list) < 1):
         return INVALID_FORMAT_VIEW
-    return build_character_message(cmd_list[0], author.id)
+
+    base_ref = db.reference("/users/" + str(author.id))
+
+    if (base_ref.child(cmd_list[0]).get() == None):
+        return ERROR_CHARACTER_NOT_EXISTS
+
+    # return build_character_message(cmd_list[0], author.id)
+    return build_character_embed(cmd_list[0], author.id)
 
 # builds the property message 
 def build_property_message():

@@ -22,7 +22,8 @@ def parse(msg) -> str:
 
     # runs the last command the user ran, if they have a last run command
     if (cmd_list[0] == ''):
-        return run_last_command(msg.author.id)
+        pass
+        # return run_last_command(msg.author.id)
     # user wants to roll some dice
     if (cmd_list[0] == "roll" or cmd_list[0] == "r"): 
         last_cmd_for_user[msg.author.id] = msg

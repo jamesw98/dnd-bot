@@ -29,6 +29,7 @@ TOKEN = os.getenv('TOKEN')
 client = discord.Client()
 
 # Features to add
+# TODO make initiative and character sheets embeds
 # TODO add more things to be able to search
 
 # Bugs to fix
@@ -52,6 +53,11 @@ async def on_message(msg):
     # if the message has the keyword, parse the command
     # and show the user the resulting message
     if ("!dnd" in msg.content):
-        await msg.channel.send(parse(msg))
+        result = parse(msg)
+
+        if (type(result) == str):
+            await msg.channel.send(result)
+        elif (type(result) == discord.Embed):
+            await msg.channel.send(embed=result)
 
 client.run(TOKEN)

@@ -132,10 +132,6 @@ def build_init_message(init_list, curr_place) -> str:
 
 def build_character_message(character_name, user_id) -> str:
     base_ref = db.reference("/users/" + str(user_id))
-
-    if (base_ref.child(character_name).get() == None):
-        return ERROR_CHARACTER_NOT_EXISTS
-
     character = base_ref.child(character_name).get()
 
     res = "Here's your character: **" + character["name"] + "**"
@@ -151,7 +147,6 @@ def build_character_message(character_name, user_id) -> str:
 
     return res
 
-# TODO refactor this, some redundant code
 def build_optional_character_message(character_name, user_id):
     base_ref = db.reference("/users/" + str(user_id))
 
