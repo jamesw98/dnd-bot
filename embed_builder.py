@@ -9,18 +9,18 @@ def build_character_embed(character_name, user_id) -> discord.Embed:
     character = base_ref.child(character_name).get()
 
     res = ""
-    res += "\nLevel: " + character["lvl"] + " | HP: " + character["hp"] + " | AC: " + character["ac"] + ""
+    res += "\nLevel: " + character["lvl"] + " | HP: " + character["hp"] + " | AC: " + character["ac"]
    
     base_attributes = res
 
-    embed_res = discord.Embed(title=character_name, description=res, color=0xCC5500)
+    embed_res = discord.Embed(title=character_name, description=res, color=color_for_character(character_name))
 
     strength =  character["attributes"]["str"] + " | " + calc_modifier(int(character["attributes"]["str"]))
     dexterity = character["attributes"]["dex"] + " | " + calc_modifier(int(character["attributes"]["dex"]))
     constitution = character["attributes"]["con"] + " | " + calc_modifier(int(character["attributes"]["con"]))
     intelligence = character["attributes"]["int"] + " | " + calc_modifier(int(character["attributes"]["int"]))
     wisdom = character["attributes"]["wis"] + " | " + calc_modifier(int(character["attributes"]["wis"]))
-    charisma = character["attributes"]["cha"] + " | " + calc_modifier(int(character["attributes"]["cha"])) + ""
+    charisma = character["attributes"]["cha"] + " | " + calc_modifier(int(character["attributes"]["cha"]))
 
     embed_res.add_field(name="Strength", value=strength, inline=True)
     embed_res.add_field(name="Dexterity", value=dexterity, inline=True)
@@ -79,6 +79,14 @@ def add_additional_properties(embed_res, user_id, character_name):
         embed_res.add_field(name="Notes", value="```" + temp_res + "```", inline=False)
 
     return embed_res
+
+def color_for_character(name):
+    hash = 0
+    for i in range(len(name)):
+        hash = ord(name[0]) + ((hash << 5) - hash)
+    
+    return hash & 0x00FFFFFF
+    
 
 
 def calc_modifier(score) -> str:
