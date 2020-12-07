@@ -13,9 +13,11 @@ ERROR_NO_CLASS_SET = "Please set a class for your character before you run this 
 ERROR_ALREADY_INIT = "This character already has an initialized spellbook. If you'd like to clear it type:\n```!dnd sb clear [name]```"
 ERROR_SPELL_ALREADY_IN_BOOK = "This character already has that spell! You can't have the same spell twice"
 ERROR_NO_BOOK_CREATED = "You have not created a book for any character or have somehow switched to a character without a spellbook (this shouldn't be possible)"
+ERROR_REMOVE_NOT_ENOUGH_ARGS = "You have to enter a spell to remove"
+ERROR_NO_SPELL_FOUND = "We couldn't find that spell in your spellbook"
 
 # invalid formatting messages
-INVALID_FORMAT_CREATE = "Invalid formatting, you must enter a character name to create a spellbook for:\n```!dnd sb add```"
+INVALID_FORMAT_CREATE = "Invalid formatting, you must enter a character name to create a spellbook for.\n```!dnd sb ceate [name]```"
 INVALID_FORMAT_ADD = "Invalid formatting, you must enter a character name, and a spell:\n```!dnd sb add [spell name]``````!dnd sb add magic missile```"
 INVALID_FORMAT_ADD_NO_LEVEL = "Invalid formatting, you did not enter a level.\n```!dnd sb add [spell name] [level]``````!dnd sb add mage hand 0```"
 INVALID_FORMAT_ADD_LEVEL = "Invalid formmating, you entered a level that doesn't exist.\nValid levels: `0, 1, 2, 3, 4, 5, 6, 7, 8, 9` where cantrips are `0`"
@@ -31,6 +33,8 @@ def spellbook_parse(cmd_list, author):
         return add_spell(cmd_list[1:], author)
     elif (cmd_list[0] == "view" or cmd_list[0] == "v"):
         return view_spellbook(author)
+    elif (cmd_list[0] == "remove" or cmd_list[0] == "r"):
+        return remove_spell(cmd_list[1:], author)
     else:
         return ERROR_INVALID_COMMAND
 
@@ -117,6 +121,51 @@ def add_spell(cmd_list, author):
     spell_ref.set(spell_value)
 
     return "Success! Added spell `" + spell_name + "` to `" + character_name + "`'s spellbook"
+
+def remove_spell(cmd_list, author):
+    if (len(cmd_list) < 1):
+        return ERROR_REMOVE_NOT_ENOUGH_ARGS
+
+    # ensures they have created a book
+    character_name = db.reference("/users/" + str(author.id) + "/sb_character").get()
+    if (character_name == None):
+        return ERROR_NO_BOOK_CREATED
+    
+    spell_value = ""
+    for i in cmd_list:
+        spell_value += i + " "
+
+    spell_value = spell_value[:len(spell_value) - 1]
+
+    character_ref = db.reference("/users/" + str(author.id) + "/" + character_name + "/")
+
+    result_str = None
+    level_res = None
+    for level in SPELL_LEVELS:
+        level_str = character_ref.child("spells").child(level).get()
+        if (level_str != "empty" and spell_value in level_str):
+            level_res = level
+            level_str = level_str.replace(spell_value, "")
+            result_str = level_str
+
+    if (len(result_str) == 1 or len(result_str) == 0):
+        result_str = "empty"
+    
+    if (result_str == None):
+        return ERROR_NO_SPELL_FOUND
+
+    if (result_str[len(result_str) - 2] == ","):
+        result_str = result_str[:len(result_str) - 2]
+        character_ref.child("spells").child(level_res).set(result_str)
+        return "Success! Removed spell: " + spell_value + " from `" + character_name + "`'s spellbook"
+    
+    for i in range(len(result_str) - 2):
+        if (result_str[i] == "," and result_str[i + 1] == " " and result_str[i + 2] == ","):
+            result_str = result_str[0:i + 1] + result_str[i + 3:]
+            break
+
+    character_ref.child("spells").child(level_res).set(result_str)
+    return "Success! Removed spell: `" + spell_value + "` from `" + character_name + "`'s spellbook"
 
 def view_spellbook(author):
     # ensures the user has created a spellbook 
