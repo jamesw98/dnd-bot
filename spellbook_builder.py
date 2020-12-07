@@ -21,7 +21,7 @@ INVALID_FORMAT_ADD_NO_LEVEL = "Invalid formatting, you did not enter a level.\n`
 INVALID_FORMAT_ADD_LEVEL = "Invalid formmating, you entered a level that doesn't exist.\nValid levels: `0, 1, 2, 3, 4, 5, 6, 7, 8, 9` where cantrips are `0`"
 
 # the possible spell levels
-SPELL_LEVELS = ["cantrips", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"]
+SPELL_LEVELS = ["Cantrips", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"]
 
 # parses the command
 def spellbook_parse(cmd_list, author):
