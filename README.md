@@ -38,6 +38,16 @@ Adventurer Companion, a Dungeons and Dragons Discord bot.
 - view valid properties: `!dnd character list properties`
 - view help for character commands: `!dnd character help`
 - note: `character` can be replace with `c` in all these commands
+### Spellbooks. (WIP)
+- create a spellbook for a character: `!dnd sb create [name]`
+  - once you create a spellbook for a character that character will be registered as the spellbook character. All future `sb` command will be run for this character
+- switch spellbook character: `!dnd sb switch [name]`
+  - NOTE: this is still in development, but should be out soon
+- add spell to spellbook: `!dnd sb add [spell] [level]`
+  - `!dnd sb add Mind Sliver 0`, 0 signifies a cantrip
+  - `!dnd sb add Fireball 3`
+  - `!dnd sb add Wish 9`
+- view spellbook: `!dnd sb view`
 ### Re-run the last command
 - re-runs the last command `!dnd`
 
