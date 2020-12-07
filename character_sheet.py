@@ -3,7 +3,6 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
-from messages import build_character_message
 from messages import build_character_help_message
 
 from embed_builder import *
@@ -14,6 +13,8 @@ ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name"
 ERROR_INVALID_PROPERTY = "You entered an invalid property.\nTo view valid properties type:```!dnd character list props```"
 ERROR_INVALID_LIST = "I'm not sure what you are trying to list. To view character help type:```!dnd character help```"
 ERROR_INVALID_COMMAND = "Sorry, that character command doesn't exist!\nType `!dnd character help` to view commands"
+ERROR_CHARACTER_NO_NOTES = "Sorry, I couldn't find any notes for that character"
+ERROR_PROF_NO_COMMA = "You must enter at least 2 profeciencies, seperated by commas:\n```!dnd character Rich set profs arcana,insight,religion```"
 
 # invalid format warnings
 INVALID_FORMAT_VIEW = "Invalid formatting, you didn't enter a name"
@@ -24,7 +25,7 @@ INVALID_FORMAT_ADD_BASE_ATTR = "Invalid formatting, something went wrong in your
 INVALID_FORMAT_ADD_STATS = "Invalid formatting, something went wrong in your stats fields"
 INVALID_FORMAT_ALIGN = "Invalid formatting, you didn't enter a proper alignment\nMake sure it is 2 words separated by a space. ie. chaotic good, lawful evil, etc"
 
-VALID_PROPERTIES = ["race", "class", "image", "notes", "description", "alignment", "copper", "silver", "gold", "platinum"]
+VALID_PROPERTIES = ["race", "class", "image", "notes", "description", "alignment", "proficiencies", "copper", "silver", "gold", "platinum"]
 
 cred = credentials.Certificate("dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-66966.firebaseio.com/"})
@@ -137,9 +138,18 @@ def set_character_property(cmd_list, author, character_name):
     if (property_type not in VALID_PROPERTIES):
         return ERROR_INVALID_PROPERTY
 
+    
+    if (property_type == "proficiencies" or property_type == "profs"):
+        if ("," not in cmd_list[1]):
+            return ERROR_PROF_NO_COMMA
+        
+        modify_db_char_property(property_type, author, character_name, cmd_list[1])
+
+        return "Success! Added proficiencies to your character"
+
     # alignments are a special case, they should be 2 words 
     # separated by a space
-    if (property_type == "alignment"):
+    elif (property_type == "alignment"):
         if (len(cmd_list) != 3):
             return INVALID_FORMAT_ALIGN
         
@@ -150,8 +160,32 @@ def set_character_property(cmd_list, author, character_name):
         modify_db_char_property(property_type, author, character_name, align_first + " " + align_second)
 
         return "Success! Set " + property_type + " to `" + align_first + " " + align_second + "` to character: `" + character_name + "`"
+
+    elif (property_type == "notes"):
+        temp_res = ""
+
+        notes_ref = db.reference("/users/" + str(author.id) + "/" + character_name + "/notes")
+
+        if (cmd_list[1] == "clear"):
+            if (notes_ref.get() != None):
+                notes_ref.delete()
+                return "Success! Cleared your notes"
+            else:
+                return ERROR_CHARACTER_NO_NOTES
+
+        if (notes_ref.get() != None):
+            temp_res = notes_ref.get() + "\n\n"
+        
+        for prop in cmd_list[1:]:
+            temp_res += prop + " "
+        
+        # modifies the property for the character
+        modify_db_char_property(property_type, author, character_name, temp_res)
+
+        return "Success! Set property: `" + property_type + "`"
+
     # description and notes are also special, since they can contain spaces
-    elif (property_type == "description" or property_type == "notes"):
+    elif (property_type == "description"):
         temp_res = ""
         for prop in cmd_list[1:]:
             temp_res += prop + " "
@@ -202,7 +236,6 @@ def view_character(cmd_list, author):
     if (base_ref.child(cmd_list[0]).get() == None):
         return ERROR_CHARACTER_NOT_EXISTS
 
-    # return build_character_message(cmd_list[0], author.id)
     return build_character_embed(cmd_list[0], author.id)
 
 # builds the property message 

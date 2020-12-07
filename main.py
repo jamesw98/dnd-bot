@@ -30,9 +30,6 @@ client = discord.Client()
 
 # Features to add
 # TODO add more things to be able to search
-# TODO custom colors for the character embeds based on the
-#      characters name, see braeden's message in disc about
-#      how to make them not shitty
 
 # Bugs to fix
 # none visible to me :^)

@@ -41,6 +41,10 @@ def add_additional_properties(embed_res, user_id, character_name):
         
         embed_res.set_thumbnail(url=temp_res)
 
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/proficiencies/").get()
+    if (temp_res != None):
+        embed_res.add_field(name="Proficiencies", value=temp_res, inline=False)
+
     temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/race/").get()
     if (temp_res != None):
         embed_res.add_field(name="Race", value=temp_res, inline=True)
@@ -86,8 +90,6 @@ def color_for_character(name):
         hash = ord(name[0]) + ((hash << 5) - hash)
     
     return hash & 0x00FFFFFF
-    
-
 
 def calc_modifier(score) -> str:
     mod = (score//2) - 5
