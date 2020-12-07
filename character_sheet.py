@@ -9,7 +9,7 @@ from embed_builder import *
 
 # error messages
 ERROR_CHARACTER_EXISTS = "You already have a character with that name in your database"
-ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name"
+ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name. To view your characters type:\n```!dnd character list```"
 ERROR_INVALID_PROPERTY = "You entered an invalid property.\nTo view valid properties type:```!dnd character list props```"
 ERROR_INVALID_LIST = "I'm not sure what you are trying to list. To view character help type:```!dnd character help```"
 ERROR_INVALID_COMMAND = "Sorry, that character command doesn't exist!\nType `!dnd character help` to view commands"

@@ -84,6 +84,10 @@ def add_additional_properties(embed_res, user_id, character_name):
 
     return embed_res
 
+# TODO implement this
+def spell_embed(name):
+    pass
+
 def color_for_character(name):
     hash = 0
     for i in range(len(name)):

@@ -29,7 +29,8 @@ TOKEN = os.getenv('TOKEN')
 client = discord.Client()
 
 # Features to add
-# TODO add more things to be able to search
+# TODO spellbook builder
+# TODO add more things to be able to search (this should be easy, save for rainy day)
 
 # Bugs to fix
 # none visible to me :^)
