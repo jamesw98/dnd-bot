@@ -122,7 +122,9 @@ def add_spell(cmd_list, author):
 
     return "Success! Added spell `" + spell_name + "` to `" + character_name + "`'s spellbook"
 
+# removes spells from the character's spellbook
 def remove_spell(cmd_list, author):
+    # ensures proper formatting
     if (len(cmd_list) < 1):
         return ERROR_REMOVE_NOT_ENOUGH_ARGS
 
@@ -131,39 +133,56 @@ def remove_spell(cmd_list, author):
     if (character_name == None):
         return ERROR_NO_BOOK_CREATED
     
+    # gets the spell the user wants to remove
     spell_value = ""
     for i in cmd_list:
         spell_value += i + " "
 
+    # removes the space at the end
     spell_value = spell_value[:len(spell_value) - 1]
-
+    
     character_ref = db.reference("/users/" + str(author.id) + "/" + character_name + "/")
 
     result_str = None
     level_res = None
+    # goes through all the spell levels
     for level in SPELL_LEVELS:
+        # gets the spells for this level
         level_str = character_ref.child("spells").child(level).get()
+        # checks if there are spells for this level and if the spell is in it
         if (level_str != "empty" and spell_value in level_str):
+            # sets the level result to this level
             level_res = level
+            # removes the spell they want to remove
             level_str = level_str.replace(spell_value, "")
+            # sets the result string
             result_str = level_str
-
-    if (len(result_str) == 1 or len(result_str) == 0):
-        result_str = "empty"
+            break
     
+    # couldn't find the spell
     if (result_str == None):
         return ERROR_NO_SPELL_FOUND
 
+    # if they removed the last spell in that level
+    if (len(result_str) == 1 or len(result_str) == 0):
+        result_str = "empty"
+
+    # if they removed the first spell in that level
+    if (result_str[0] == ","):
+        result_str = result_str[2:]
+
+    # if the removed the last spell in a level
     if (result_str[len(result_str) - 2] == ","):
         result_str = result_str[:len(result_str) - 2]
         character_ref.child("spells").child(level_res).set(result_str)
         return "Success! Removed spell: " + spell_value + " from `" + character_name + "`'s spellbook"
     
+    # removes commas if the spell was some where in the middle of the of the list
     for i in range(len(result_str) - 2):
         if (result_str[i] == "," and result_str[i + 1] == " " and result_str[i + 2] == ","):
             result_str = result_str[0:i + 1] + result_str[i + 3:]
             break
-
+    
     character_ref.child("spells").child(level_res).set(result_str)
     return "Success! Removed spell: `" + spell_value + "` from `" + character_name + "`'s spellbook"
 
