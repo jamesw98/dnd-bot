@@ -4,15 +4,14 @@ import discord
 from firebase_admin import credentials
 from firebase_admin import db
 
+SPELL_LEVELS = ["Cantrips", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"]
+
 def build_character_embed(character_name, user_id) -> discord.Embed:
     base_ref = db.reference("/users/" + str(user_id))
     character = base_ref.child(character_name).get()
 
-    res = ""
-    res += "\nLevel: " + character["lvl"] + " | HP: " + character["hp"] + " | AC: " + character["ac"]
+    res = "\nLevel: " + character["lvl"] + " | HP: " + character["hp"] + " | AC: " + character["ac"]
    
-    base_attributes = res
-
     embed_res = discord.Embed(title=character_name, description=res, color=color_for_character(character_name))
 
     strength =  character["attributes"]["str"] + " | " + calc_modifier(int(character["attributes"]["str"]))
@@ -84,9 +83,25 @@ def add_additional_properties(embed_res, user_id, character_name):
 
     return embed_res
 
-# TODO implement this
-def spell_embed(name):
-    pass
+def build_spell_embed(character_name, user_id):
+    base_ref = db.reference("/users/" + str(user_id))
+    character_spells = "Spells for " + character_name
+
+    embed_res = discord.Embed(title=character_spells, color=color_for_character(character_name))
+    
+    temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/image/").get()
+    if (temp_res != None):
+        if ("http" not in temp_res and "https" not in temp_res):
+            temp_res = "http://" + temp_res
+        
+        embed_res.set_thumbnail(url=temp_res)
+    
+    for level in SPELL_LEVELS:
+        spells_for_level = base_ref.child(character_name).child("spells").child(level).get()
+        if (spells_for_level != "empty"):
+            embed_res.add_field(name=level, value=spells_for_level, inline=False)
+    
+    return embed_res
 
 def color_for_character(name):
     hash = 0
