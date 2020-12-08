@@ -15,6 +15,7 @@ ERROR_SPELL_ALREADY_IN_BOOK = "This character already has that spell! You can't 
 ERROR_NO_BOOK_CREATED = "You have not created a book for any character or have somehow switched to a character without a spellbook (this shouldn't be possible)"
 ERROR_REMOVE_NOT_ENOUGH_ARGS = "You have to enter a spell to remove"
 ERROR_NO_SPELL_FOUND = "We couldn't find that spell in your spellbook"
+ERROR_NO_CHARACTERS = "You have not created any characters. To view character commands type:\n```!dnd character help```"
 
 # invalid formatting messages
 INVALID_FORMAT_CREATE = "Invalid formatting, you must enter a character name to create a spellbook for.\n```!dnd sb ceate [name]```"
@@ -40,6 +41,10 @@ def spellbook_parse(cmd_list, author):
 
 # initializes a spellbook for a character
 def init_spellbook(cmd_list, author):
+    base_ref = db.reference("/users/" + str(author.id).get())
+    if (base_ref == None):
+        return ERROR_NO_CHARACTERS
+
     # ensures valid formatting
     if (len(cmd_list) == 0):
         return INVALID_FORMAT_CREATE
@@ -73,6 +78,10 @@ def init_spellbook(cmd_list, author):
 
 # adds a spell to a character for a user
 def add_spell(cmd_list, author): 
+    base_ref = db.reference("/users/" + str(author.id).get())
+    if (base_ref == None):
+        return ERROR_NO_CHARACTERS
+    
     # ensures valid formatting
     if (len(cmd_list) < 2):
         return INVALID_FORMAT_ADD
@@ -124,6 +133,10 @@ def add_spell(cmd_list, author):
 
 # removes spells from the character's spellbook
 def remove_spell(cmd_list, author):
+    base_ref = db.reference("/users/" + str(author.id).get())
+    if (base_ref == None):
+        return ERROR_NO_CHARACTERS
+
     # ensures proper formatting
     if (len(cmd_list) < 1):
         return ERROR_REMOVE_NOT_ENOUGH_ARGS
@@ -187,6 +200,10 @@ def remove_spell(cmd_list, author):
     return "Success! Removed spell: `" + spell_value + "` from `" + character_name + "`'s spellbook"
 
 def view_spellbook(author):
+    base_ref = db.reference("/users/" + str(author.id).get())
+    if (base_ref == None):
+        return ERROR_NO_CHARACTERS
+
     # ensures the user has created a spellbook 
     character_name = db.reference("/users/" + str(author.id) + "/sb_character").get()
     if (character_name == None):
