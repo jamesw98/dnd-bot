@@ -41,7 +41,7 @@ def spellbook_parse(cmd_list, author):
 
 # initializes a spellbook for a character
 def init_spellbook(cmd_list, author):
-    base_ref = db.reference("/users/" + str(author.id).get())
+    base_ref = db.reference("/users/" + str(author.id)).get()
     if (base_ref == None):
         return ERROR_NO_CHARACTERS
 
@@ -78,7 +78,7 @@ def init_spellbook(cmd_list, author):
 
 # adds a spell to a character for a user
 def add_spell(cmd_list, author): 
-    base_ref = db.reference("/users/" + str(author.id).get())
+    base_ref = db.reference("/users/" + str(author.id)).get()
     if (base_ref == None):
         return ERROR_NO_CHARACTERS
     
@@ -133,7 +133,7 @@ def add_spell(cmd_list, author):
 
 # removes spells from the character's spellbook
 def remove_spell(cmd_list, author):
-    base_ref = db.reference("/users/" + str(author.id).get())
+    base_ref = db.reference("/users/" + str(author.id)).get()
     if (base_ref == None):
         return ERROR_NO_CHARACTERS
 
@@ -200,7 +200,7 @@ def remove_spell(cmd_list, author):
     return "Success! Removed spell: `" + spell_value + "` from `" + character_name + "`'s spellbook"
 
 def view_spellbook(author):
-    base_ref = db.reference("/users/" + str(author.id).get())
+    base_ref = db.reference("/users/" + str(author.id)).get()
     if (base_ref == None):
         return ERROR_NO_CHARACTERS
 
