@@ -32,8 +32,10 @@ firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-669
 
 # parses the character command
 def character_parse(cmd_list, author):
+    if (len(cmd_list) == 0):
+        return ERROR_INVALID_COMMAND
     # user wants to add a character
-    if (cmd_list[0] == "add" or cmd_list[0] == "a"):
+    elif (cmd_list[0] == "add" or cmd_list[0] == "a"):
         return create_character_for_user(cmd_list[1:], author)
     # user wants to view their characters
     elif (cmd_list[0] == "view" or cmd_list[0] == "v"):

@@ -22,13 +22,16 @@ INVALID_FORMAT_CREATE = "Invalid formatting, you must enter a character name to 
 INVALID_FORMAT_ADD = "Invalid formatting, you must enter a character name, and a spell:\n```!dnd sb add [spell name]``````!dnd sb add magic missile```"
 INVALID_FORMAT_ADD_NO_LEVEL = "Invalid formatting, you did not enter a level.\n```!dnd sb add [spell name] [level]``````!dnd sb add mage hand 0```"
 INVALID_FORMAT_ADD_LEVEL = "Invalid formmating, you entered a level that doesn't exist.\nValid levels: `0, 1, 2, 3, 4, 5, 6, 7, 8, 9` where cantrips are `0`"
+INVALID_FORMAT_SWITCH = "Invalid formatting, you must enter a character to switch to"
 
 # the possible spell levels
 SPELL_LEVELS = ["Cantrips", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"]
 
 # parses the command
 def spellbook_parse(cmd_list, author):
-    if (cmd_list[0] == "create" or cmd_list[0] == "c"): #!dnd sb create [character name]
+    if (len(cmd_list) == 0):
+        return ERROR_INVALID_COMMAND
+    elif (cmd_list[0] == "create" or cmd_list[0] == "c"): #!dnd sb create [character name]
         return init_spellbook(cmd_list[1:], author)
     elif (cmd_list[0] == "add" or cmd_list[0] == "a"):
         return add_spell(cmd_list[1:], author)
@@ -36,8 +39,28 @@ def spellbook_parse(cmd_list, author):
         return view_spellbook(author)
     elif (cmd_list[0] == "remove" or cmd_list[0] == "r"):
         return remove_spell(cmd_list[1:], author)
+    elif (cmd_list[0] == "switch" or cmd_list[0] == "s"):
+        return switch_book(cmd_list[1:], author)
     else:
         return ERROR_INVALID_COMMAND
+
+def switch_book(cmd_list, author):
+    base_ref = db.reference("/users/" + str(author.id)).get()
+    if (base_ref == None):
+        return ERROR_NO_CHARACTERS
+
+    if (len(cmd_list) == 0):
+        return INVALID_FORMAT_SWITCH
+    
+    character_name = cmd_list[0]
+
+    character_ref = db.reference("/users/" + str(author.id) + "/" + character_name + "/")
+    if (character_ref.get() == None):
+        return ERROR_CHARACTER_NOT_EXISTS
+
+    db.reference("/users/" + str(author.id) + "/sb_character").set(character_name)
+
+    return "Success! Switched to characters: `" + character_name + "`"
 
 # initializes a spellbook for a character
 def init_spellbook(cmd_list, author):
