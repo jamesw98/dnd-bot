@@ -103,6 +103,80 @@ def build_spell_embed(character_name, user_id):
     
     return embed_res
 
+def build_spell_embed(json):
+    spell_level = str(json["level"])
+    spell_desc = json["desc"]
+
+    embed_res = discord.Embed(title="Search Results", description="Result Type: Spell", color=color_for_character("spell"))
+
+    embed_res.add_field(name="Spell Level", value=str(json["level"]), inline=True)
+    embed_res.add_field(name="Range", value=json["range"], inline=True)
+
+    try:
+        if (spell_level != "0"):
+            embed_res.add_field(name="Damage at Base Level", value=json["damage"]["damage_at_slot_level"][spell_level], inline=False)
+        else:
+            embed_res.add_field(name="Damange at Level 1", value=json["damage"]["damage_at_character_level"]["1"])
+        
+        embed_res.add_field(name="Damage Type", value=json["damage"]["damage_type"]["name"], inline=True)
+    except:
+        pass
+
+    desc_res = ""
+    for i in spell_desc:
+        desc_res += i + " "
+
+    embed_res.add_field(name="Description", value=desc_res, inline=False)
+
+    return embed_res
+
+def build_equipment_embed(json):
+    embed_res = discord.Embed(title="Search Results", description="Result Type: Equipment", color=color_for_character("equipment"))
+
+    equip_type = json["equipment_category"]["name"]
+
+    embed_res.add_field(name="Equipment Type", value=equip_type, inline=False)
+    
+    if (equip_type == "Armor"):
+        embed_res.add_field(name="Armor Type", value=json["armor_category"], inline=True)
+        embed_res.add_field(name="Armor Class", value=str(json["armor_class"]["base"]), inline=True)
+    elif (equip_type == "Weapon"):
+        embed_res.add_field(name="Damage Type", value=json["damage"]["damage_type"]["name"], inline=True)
+        embed_res.add_field(name="Damage Dice", value=json["damage"]["damage_dice"], inline=True)
+
+    return embed_res
+
+def build_monster_embed(json):
+    embed_res = discord.Embed(title="Search Results", description="Result Type: Monster", color=color_for_character("monster"))
+
+    embed_res.add_field(name="Size", value=json["size"], inline=True)
+    embed_res.add_field(name="Type", value=json["type"], inline=True)
+    embed_res.add_field(name="Speed", value=json["speed"]["walk"], inline=True)
+
+    embed_res.add_field(name="Armor Class", value=str(json["armor_class"]), inline=False)
+    embed_res.add_field(name="Hit Points", value= str(json["hit_points"]), inline=True)
+    embed_res.add_field(name="Hit Dice", value= json["hit_dice"], inline=True)
+    
+    return  embed_res
+
+def build_magic_item_embed(json):
+    item_desc = json["desc"]
+    item_name = json["name"]
+    embed_res = discord.Embed(title="Search Results", description="Result Type: Magic Item", color=color_for_character("magic item"))
+
+    embed_res.add_field(name="Name", value=item_name, inline=False)
+
+    desc_res = item_desc[0] + " " + item_desc[1] + "..."
+        
+    embed_res.add_field(name="Description", value=desc_res, inline=False)
+
+    link = "https://roll20.net/compendium/dnd5e/" + item_name.replace(" ", "%20") + "#content"
+
+    embed_res.add_field(name="Link", value=link, inline=False)
+    
+    return embed_res
+
+
 def color_for_character(name):
     hash = 0
     for i in range(len(name)):

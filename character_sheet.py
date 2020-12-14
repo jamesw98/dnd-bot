@@ -27,7 +27,8 @@ INVALID_FORMAT_ALIGN = "Invalid formatting, you didn't enter a proper alignment\
 
 VALID_PROPERTIES = ["race", "class", "image", "notes", "description", "alignment", "proficiencies", "copper", "silver", "gold", "platinum"]
 
-cred = credentials.Certificate("dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
+
+cred = credentials.Certificate("/etc/dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-66966.firebaseio.com/"})
 
 # parses the character command

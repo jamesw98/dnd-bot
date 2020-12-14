@@ -2,6 +2,7 @@ import requests as rq
 import concurrent.futures
 
 from messages import *
+from embed_builder import *
 
 EQUIP_URL = "https://www.dnd5eapi.co/api/equipment"
 MI_URL = "https://www.dnd5eapi.co/api/magic-items"
@@ -67,15 +68,15 @@ def get_search_results(query):
 
     # gets the formatting for the type we are looking for
     if (res_type == "spell"):
-        result_string += build_spell_string(json)
+        result_string = build_spell_embed(json)
     elif (res_type == "equipment"):
-        result_string += build_equipment_string(json)
+        result_string = build_equipment_embed(json)
     elif (res_type == "monster"):
-        result_string += build_monster_string(json)
+        result_string = build_monster_embed(json)
     elif (res_type == "magicitem"):
-        result_string += build_magic_item_string(json)
-
-    return(result_string)
+        result_string = build_magic_item_embed(json)
+    
+    return result_string
 
 ### This multi-threaded implementation of this search is actually slightly slower than
 ### the single threaded version, but it's still neat. 

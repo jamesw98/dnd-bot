@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
 import os
 import discord
 import sys
+import traceback
 
 from dotenv import load_dotenv
 from parse_cmd import parse
@@ -29,7 +31,7 @@ TOKEN = os.getenv('TOKEN')
 client = discord.Client()
 
 # Features to add
-# TODO spellbook builder
+# TODO make search results embeds 
 # TODO add more things to be able to search (this should be easy, save for rainy day)
 
 # Bugs to fix
@@ -50,6 +52,7 @@ async def on_message(msg):
     # makes sure the bot can't message itself
     if (msg.author == client.user):
         return
+
     # if the message has the keyword, parse the command
     # and show the user the resulting message
     if ("!dnd" in msg.content):
