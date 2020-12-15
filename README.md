@@ -43,7 +43,7 @@ If you'd like to join a server to test it out click this link: https://discord.g
 - create a spellbook for a character: `!dnd sb create [name]`
   - once you create a spellbook for a character that character will be registered as the spellbook character. All future `sb` command will be run for this character
 - switch spellbook character: `!dnd sb switch [name]`
-  -`!dnd sb switch volo`
+  - `!dnd sb switch volo`
 - add spell to spellbook: `!dnd sb add [spell] [level]`
   - `!dnd sb add Mind Sliver 0`, 0 signifies a cantrip
   - `!dnd sb add Fireball 3`
