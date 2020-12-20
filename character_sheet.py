@@ -16,6 +16,7 @@ ERROR_INVALID_COMMAND = "Sorry, that character command doesn't exist!\nType `!dn
 ERROR_CHARACTER_NO_NOTES = "Sorry, I couldn't find any notes for that character"
 ERROR_PROF_NO_COMMA = "You must enter at least 2 profeciencies, seperated by commas:\n```!dnd character Rich set profs arcana,insight,religion```"
 ERROR_NO_CHARACTERS = "You have not created any characters. To view character commands type:\n```!dnd character help```"
+ERROR_NO_CHARACTER_SELECTED = "You have not selected a character, to do so either create one or switch to one. Type `!dnd character help` for syntax"
 
 # invalid format warnings
 INVALID_FORMAT_VIEW = "Invalid formatting, you didn't enter a name"
@@ -41,7 +42,7 @@ def character_parse(cmd_list, author):
         return create_character_for_user(cmd_list[1:], author)
     # user wants to view their characters
     elif (cmd_list[0] == "view" or cmd_list[0] == "v"):
-        return view_character(cmd_list[1:], author)
+        return view_character(author)
     # user wants to set a property for one of their characters
     elif (cmd_list[0] == "set" or cmd_list[1] == "s"):
         return set_character_property(cmd_list[1:], author)
@@ -151,7 +152,7 @@ def switch_character(cmd_list, author):
 def set_character_property(cmd_list, author):
     character_name = db.reference("/users/" + str(author.id) + "/curr_character").get()
     if (character_name == None):
-        return ERROR_CHARACTER_NOT_EXISTS
+        return ERROR_NO_CHARACTER_SELECTED
 
     # makes sure input is proper
     if (len(cmd_list) < 2):
@@ -260,16 +261,12 @@ def remove_character(cmd_list, author):
     return "Success! Your character: " + character_name + " has been removed"
 
 # displays character info
-def view_character(cmd_list, author):
-    if (len(cmd_list) < 1):
-        return INVALID_FORMAT_VIEW
+def view_character(author):
+    character_name = db.reference("/users/" + str(author.id) + "/curr_character").get()
+    if (character_name == None):
+        return ERROR_NO_CHARACTER_SELECTED
 
-    base_ref = db.reference("/users/" + str(author.id))
-
-    if (base_ref.child(cmd_list[0]).get() == None):
-        return ERROR_CHARACTER_NOT_EXISTS
-
-    return build_character_embed(cmd_list[0], author.id)
+    return build_character_embed(character_name, author.id)
 
 # builds the property message 
 def build_property_message():
