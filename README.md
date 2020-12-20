@@ -27,6 +27,8 @@ If you'd like to join a server to test it out click this link: https://discord.g
 ### Character Sheets.
 - add a character: `!dnd character add [name] [lvl],[hp],[ac] [attributes]` where attributes are: (str,dex,con,int,wis,cha)
   - `!dnd character add Volo 3,25,13 8,10,16,18,13,20` note the space between lvl,hp,ac and the attributes
+  - once you create a character that character will be registered as the current character. All future `character` commands will be run for this character
+- switch current character: `!dnd character switch [name]`
 - view a character: `!dnd character view [name]`
 - set property of character: `!dnd character [character name] set [property name] [value]`
   - `!dnd character volo set image bit.ly/2L2kvgV`
@@ -41,7 +43,7 @@ If you'd like to join a server to test it out click this link: https://discord.g
 - note: `character` can be replace with `c` in all these commands
 ### Spellbooks. (WIP)
 - create a spellbook for a character: `!dnd sb create [name]`
-  - once you create a spellbook for a character that character will be registered as the spellbook character. All future `sb` command will be run for this character
+  - once you create a spellbook for a character that character will be registered as the spellbook character. All future `sb` commands will be run for this character
 - switch spellbook character: `!dnd sb switch [name]`
   - `!dnd sb switch volo`
 - add spell to spellbook: `!dnd sb add [spell] [level]`
