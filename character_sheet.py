@@ -43,8 +43,8 @@ def character_parse(cmd_list, author):
     elif (cmd_list[0] == "view" or cmd_list[0] == "v"):
         return view_character(cmd_list[1:], author)
     # user wants to set a property for one of their characters
-    elif (len(cmd_list) > 2 and (cmd_list[1] == "set" or cmd_list[1] == "s")):
-        return set_character_property(cmd_list[2:], author, cmd_list[0])
+    elif (cmd_list[0] == "set" or cmd_list[1] == "s"):
+        return set_character_property(cmd_list[1:], author)
     # user wants to list their characters or the property list
     elif (cmd_list[0] == "list" or cmd_list[0] == "l"):
         return list_helper(cmd_list[1:], author)
@@ -148,7 +148,11 @@ def switch_character(cmd_list, author):
     return "Success! Switched to characters: `" + character_name + "`"
 
 # sets a property for a character
-def set_character_property(cmd_list, author, character_name):
+def set_character_property(cmd_list, author):
+    character_name = db.reference("/users/" + str(author.id) + "/curr_character").get()
+    if (character_name == None):
+        return ERROR_CHARACTER_NOT_EXISTS
+
     # makes sure input is proper
     if (len(cmd_list) < 2):
         return INVALID_FORMAT_SET
@@ -164,6 +168,7 @@ def set_character_property(cmd_list, author, character_name):
 
     # makes sure the property they are trying to set is valid
     if (property_type not in VALID_PROPERTIES):
+        print(property_type)
         return ERROR_INVALID_PROPERTY
 
     
