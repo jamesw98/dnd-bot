@@ -15,6 +15,7 @@ ERROR_INVALID_LIST = "I'm not sure what you are trying to list. To view characte
 ERROR_INVALID_COMMAND = "Sorry, that character command doesn't exist!\nType `!dnd character help` to view commands"
 ERROR_CHARACTER_NO_NOTES = "Sorry, I couldn't find any notes for that character"
 ERROR_PROF_NO_COMMA = "You must enter at least 2 profeciencies, seperated by commas:\n```!dnd character Rich set profs arcana,insight,religion```"
+ERROR_NO_CHARACTERS = "You have not created any characters. To view character commands type:\n```!dnd character help```"
 
 # invalid format warnings
 INVALID_FORMAT_VIEW = "Invalid formatting, you didn't enter a name"
@@ -24,9 +25,9 @@ INVALID_FORMAT_REMOVE = "Invalid formatting, you need to enter a character to re
 INVALID_FORMAT_ADD_BASE_ATTR = "Invalid formatting, something went wrong in your level,hp,ac fields"
 INVALID_FORMAT_ADD_STATS = "Invalid formatting, something went wrong in your stats fields"
 INVALID_FORMAT_ALIGN = "Invalid formatting, you didn't enter a proper alignment\nMake sure it is 2 words separated by a space. ie. chaotic good, lawful evil, etc"
+INVALID_FORMAT_SWITCH = "Invalid formatting, you must enter a character name:```!dnd character switch volo```"
 
 VALID_PROPERTIES = ["race", "class", "image", "notes", "description", "alignment", "proficiencies", "copper", "silver", "gold", "platinum"]
-
 
 cred = credentials.Certificate("/etc/dnd-discord-bot-66966-firebase-adminsdk-pncqe-3815ee866c.json")
 firebase_admin.initialize_app(cred, {"databaseURL": "https://dnd-discord-bot-66966.firebaseio.com/"})
@@ -53,6 +54,8 @@ def character_parse(cmd_list, author):
     # user wants to view the help message
     elif (cmd_list[0] == "help" or cmd_list[0] == "h"):
         return build_character_help_message()
+    elif (cmd_list[0] == "switch" or cmd_list[0] == "s"):
+        return switch_character(cmd_list[1:], author)
     else:
         return ERROR_INVALID_COMMAND
 
@@ -120,7 +123,29 @@ def create_character_for_user(cmd_list, author):
             }
     })
 
-    return "Success! Character added!\nType `!dnd character view " + char_name + "` to view them"
+    db.reference("/users/" + str(author.id) + "/curr_character").set(char_name)
+
+    character_message = "\nYou are now modifying `" + char_name + "`, all character names commands will now be run on this character. To switch characters type:```!dnd character switch [name]```"
+    return "Success! Character added!\nType `!dnd character view " + char_name + "` to view them" + character_message
+
+# switches the character that is currently being modified
+def switch_character(cmd_list, author):
+    base_ref = db.reference("/users/" + str(author.id)).get()
+    if (base_ref == None):
+        return ERROR_NO_CHARACTERS
+
+    if (len(cmd_list) == 0):
+        return INVALID_FORMAT_SWITCH
+
+    character_name = cmd_list[0]
+
+    character_ref = db.reference("/users/" + str(author.id) + "/" + character_name + "/")
+    if (character_ref.get() == None):
+        return ERROR_CHARACTER_NOT_EXISTS
+
+    db.reference("/users/" + str(author.id) + "/curr_character").set(character_name)
+
+    return "Success! Switched to characters: `" + character_name + "`"
 
 # sets a property for a character
 def set_character_property(cmd_list, author, character_name):
@@ -259,6 +284,8 @@ def build_character_list_message(char_list):
     c = 0
     res = "```"
     for i in char_list:
+        if (i == "sb_character"):
+            continue
         if (c != len(char_list) - 1):
             res += i + ", "
         else:
