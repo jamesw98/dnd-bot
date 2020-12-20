@@ -25,7 +25,8 @@ def build_character_help_message() -> str:
     res += "'!dnd c list': lists the characters available to you\n"
     res += "'!dnd c list properties': lists the properties you are able to set for any characters\n\n"
     res += "'!dnd c add [name] lvl,hp,ac str,dex,con,int,wis,cha: adds a character\n(note the space between ...,ac and str,dex,...)\n\n"
-    res += "'!dnd c [name] set [property name] [property value]: sets a property for a character\n(for notes, description, and alignment, spaces are allowed)\n\n"
+    res += "'!dnd c set [property name] [property value]: sets a property for a character\n(for notes, description, and alignment, spaces are allowed)\n\n"
+    res += "'!dnd c view`: lets you view a character\n\n"
     res += "'!dnd c remove [name]: removes a character from your list"
     res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
     return res
