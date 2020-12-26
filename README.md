@@ -1,6 +1,7 @@
 # dnd-bot
 Adventurer Companion, a Dungeons and Dragons Discord bot.  
-If you'd like to join a server to test it out click this link: https://discord.gg/sp97wJYffu
+[Click here to add the bot to your server!](https://top.gg/bot/782772961366507611)
+[Click here to join the test server!](https://discord.gg/sp97wJYffu)
 
 ## Current Features  
 ### Help command. 
