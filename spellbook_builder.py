@@ -4,12 +4,12 @@ import discord
 from firebase_admin import credentials
 from firebase_admin import db
 
-from embed_builder import build_spell_embed
+from embed_builder import build_spellbook_embed
 
 # error messages
 ERROR_INVALID_COMMAND = "Sorry, that spellbook command doesn't exist!\nType `!dnd sb help` to view commands"
 ERROR_CHARACTER_NOT_EXISTS = "I could not find a character with that name. To view your characters type:\n```!dnd character list```"
-ERROR_NO_CLASS_SET = "Please set a class for your character before you run this command\n```!dnd c [name] set class [class]```"
+ERROR_NO_CLASS_SET = "Please set a class for your character before you run this command\n```!dnd c set class [class]```"
 ERROR_ALREADY_INIT = "This character already has an initialized spellbook. If you'd like to clear it type:\n```!dnd sb clear [name]```"
 ERROR_SPELL_ALREADY_IN_BOOK = "This character already has that spell! You can't have the same spell twice"
 ERROR_NO_BOOK_CREATED = "You have not created a book for any character or have somehow switched to a character without a spellbook (this shouldn't be possible)"
@@ -31,7 +31,7 @@ SPELL_LEVELS = ["Cantrips", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8t
 def spellbook_parse(cmd_list, author):
     if (len(cmd_list) == 0):
         return ERROR_INVALID_COMMAND
-    elif (cmd_list[0] == "create" or cmd_list[0] == "c"): #!dnd sb create [character name]
+    elif (cmd_list[0] == "create" or cmd_list[0] == "c"):
         return init_spellbook(cmd_list[1:], author)
     elif (cmd_list[0] == "add" or cmd_list[0] == "a"):
         return add_spell(cmd_list[1:], author)
@@ -79,8 +79,6 @@ def init_spellbook(cmd_list, author):
     if (character_ref.get() == None):
         return ERROR_CHARACTER_NOT_EXISTS
 
-    # ensures the user has set a class for this character (this will come in to play eventually, but right now this doesn't really matter)
-    # TODO make this matter
     character_class = db.reference("/users/" + str(author.id) + "/" + character_name + "/class").get()
     if (character_class == None):
         return ERROR_NO_CLASS_SET
@@ -147,10 +145,14 @@ def add_spell(cmd_list, author):
         if (spell_value in spell_ref.get()):
             return ERROR_SPELL_ALREADY_IN_BOOK
         # adds the spell to their list of spells in this level
-        spell_value = spell_ref.get() + ", " + spell_value
+        temp_ref = spell_ref.get()
+        temp_ref.append(spell_value)
+        spell_ref.set(temp_ref)
+        # TODO change remove and view to now use lists like this
+    else :
+        # if they don't have any spells in this level, just set the level to only contain this spell
+        spell_ref.set([spell_value])
     
-    # if they don't have any spells in this level, just set the level to only contain this spell
-    spell_ref.set(spell_value)
 
     return "Success! Added spell `" + spell_name + "` to `" + character_name + "`'s spellbook"
 
@@ -232,4 +234,4 @@ def view_spellbook(author):
     if (character_name == None):
         return ERROR_NO_BOOK_CREATED
 
-    return build_spell_embed(character_name, author.id)
+    return build_spellbook_embed(character_name, author.id)
