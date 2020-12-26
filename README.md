@@ -30,11 +30,11 @@ Adventurer Companion, a Dungeons and Dragons Discord bot.
   - `!dnd character add Volo 3,25,13 8,10,16,18,13,20` note the space between lvl,hp,ac and the attributes
   - once you create a character that character will be registered as the current character. All future `character` commands will be run for this character
 - switch current character: `!dnd character switch [name]`
-- view a character: `!dnd character view [name]`
+- view current character: `!dnd character view`
 - set property of character: `!dnd character [character name] set [property name] [value]`
-  - `!dnd character volo set image bit.ly/2L2kvgV`
-  - `!dnd character volo set gold 100`
-  - `!dnd character volo set notes "these are some notes about the character, be sure to encose them in quotes"`
+  - `!dnd character set image bit.ly/2L2kvgV`
+  - `!dnd character set gold 100`
+  - `!dnd character set notes "these are some notes about the character, be sure to encose them in quotes"`
     - notes will be appended to the end of each other, if you want to clear your notes for a character type:
     - `!dnd character [name] set notes clear`
 - remove a character from your list: `!dnd character remove [name]`
