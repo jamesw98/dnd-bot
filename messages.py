@@ -24,7 +24,9 @@ def build_character_help_message() -> str:
     res += "```'!dnd character help': shows this message\n\n"
     res += "'!dnd c list': lists the characters available to you\n"
     res += "'!dnd c list properties': lists the properties you are able to set for any characters\n\n"
-    res += "'!dnd c add [name] lvl,hp,ac str,dex,con,int,wis,cha: adds a character\n(note the space between ...,ac and str,dex,...)\n\n"
+    res += "'!dnd c add [name] lvl,hp,ac str,dex,con,int,wis,cha: adds a character\n(note the space between ...,ac and str,dex,...)\n"
+    res += "Note: after you add a character, it will be registered as your current character. set and view will be run on this character until you switch\n\n"
+    res += "'!dnd c switch [name]': changes the current character\n\n"
     res += "'!dnd c set [property name] [property value]: sets a property for a character\n(for notes, description, and alignment, spaces are allowed)\n\n"
     res += "'!dnd c view': lets you view a character\n\n"
     res += "'!dnd c remove [name]: removes a character from your list"
@@ -43,6 +45,19 @@ def build_init_help_message() -> str:
     res += "'!dnd init clear': clears the initiative and stops tracking\n\n"
     res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
     return res
+
+def build_spellbook_help_message() -> str:
+    res = "Adventure Companion " + VERSION + " Spellbook Help"
+    res += "```'!dnd sb help': shows this message\n\n"
+    res += "'!dnd sb init [character name]': initializes a spellbook for a character\n"
+    res += "Note: after you initialize a spellbook for a character, it will be registered as your current spellbook. All sb commands will be run on this spellbbook until you switch\n\n"
+    res += "'!dnd sb switch [name]': switches to a new character spellbook\n\n"
+    res += "'!dnd sb view': shows the spellbook for the current character\n\n"
+    res += "'!dnd sb add [spell] [level]': adds a spell to the current spellbook. (Note: 0 represents cantrips)\n\n"
+    res += "'!dnd sb remove [spell]': removes a spell from the current spellbook\n\n"
+    res += "```Created by **jombles#6380**\nFor full documentation see: <https://github.com/jamesw98/dnd-bot>"
+    return res
+
 
 # builds the initiative message
 def build_init_message(init_list, curr_place) -> str:

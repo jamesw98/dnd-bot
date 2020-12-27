@@ -5,6 +5,7 @@ from firebase_admin import credentials
 from firebase_admin import db
 
 from embed_builder import build_spellbook_embed
+from messages import build_spellbook_help_message
 
 # error messages
 ERROR_INVALID_COMMAND = "Sorry, that spellbook command doesn't exist!\nType `!dnd sb help` to view commands"
@@ -41,19 +42,26 @@ def spellbook_parse(cmd_list, author):
         return remove_spell(cmd_list[1:], author)
     elif (cmd_list[0] == "switch" or cmd_list[0] == "s"):
         return switch_book(cmd_list[1:], author)
+    elif (cmd_list[0] == "help" or cmd_list[0] == "h"):
+        return build_spellbook_help_message()
     else:
         return ERROR_INVALID_COMMAND
 
+# switches the current spellbook to another character
 def switch_book(cmd_list, author):
+    # ensures the user has characters
     base_ref = db.reference("/users/" + str(author.id)).get()
     if (base_ref == None):
         return ERROR_NO_CHARACTERS
 
+    # ensures valid command formatting
     if (len(cmd_list) == 0):
         return INVALID_FORMAT_SWITCH
     
+    # gets the character name from the user command
     character_name = cmd_list[0]
 
+    # makes sure the character they want to switch to exists 
     character_ref = db.reference("/users/" + str(author.id) + "/" + character_name + "/")
     if (character_ref.get() == None):
         return ERROR_CHARACTER_NOT_EXISTS
@@ -148,11 +156,9 @@ def add_spell(cmd_list, author):
         temp_ref = spell_ref.get()
         temp_ref.append(spell_value)
         spell_ref.set(temp_ref)
-        # TODO change remove and view to now use lists like this
     else :
         # if they don't have any spells in this level, just set the level to only contain this spell
         spell_ref.set([spell_value])
-    
 
     return "Success! Added spell `" + spell_name + "` to `" + character_name + "`'s spellbook"
 
@@ -198,6 +204,7 @@ def remove_spell(cmd_list, author):
    
     return "Couldn't find that spell"    
 
+# shows an embed for the current character's spellbook
 def view_spellbook(author):
     base_ref = db.reference("/users/" + str(author.id)).get()
     if (base_ref == None):
