@@ -6,33 +6,39 @@ from firebase_admin import db
 
 SPELL_LEVELS = ["Cantrips", "1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th", "9th"]
 
+# builds the character embed to send to the user
 def build_character_embed(character_name, user_id) -> discord.Embed:
     base_ref = db.reference("/users/" + str(user_id))
     character = base_ref.child(character_name).get()
-
+    
+    # base attributes
     res = "\nLevel: " + character["lvl"] + " | HP: " + character["hp"] + " | AC: " + character["ac"]
-   
+    
+    # builds the base embed
     embed_res = discord.Embed(title=character_name, description=res, color=color_for_character(character_name))
 
+    # gets all the ability score values
     strength =  character["attributes"]["str"] + " | " + calc_modifier(int(character["attributes"]["str"]))
     dexterity = character["attributes"]["dex"] + " | " + calc_modifier(int(character["attributes"]["dex"]))
     constitution = character["attributes"]["con"] + " | " + calc_modifier(int(character["attributes"]["con"]))
     intelligence = character["attributes"]["int"] + " | " + calc_modifier(int(character["attributes"]["int"]))
     wisdom = character["attributes"]["wis"] + " | " + calc_modifier(int(character["attributes"]["wis"]))
     charisma = character["attributes"]["cha"] + " | " + calc_modifier(int(character["attributes"]["cha"]))
-
+    # adds all the ability score values
     embed_res.add_field(name="Strength", value=strength, inline=True)
     embed_res.add_field(name="Dexterity", value=dexterity, inline=True)
     embed_res.add_field(name="Constitution", value=constitution, inline=True)
     embed_res.add_field(name="Intelligence", value=intelligence, inline=True)
     embed_res.add_field(name="Wisdom", value=wisdom, inline=True)
     embed_res.add_field(name="Charisma", value=charisma, inline=True)
-
+    # gets any additional properties
     embed_res = add_additional_properties(embed_res, user_id, character_name)
 
     return embed_res
 
+# gets additional properties for the character
 def add_additional_properties(embed_res, user_id, character_name):
+    # checks if there is an image for the character
     temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/image/").get()
     if (temp_res != None):
         if ("http" not in temp_res and "https" not in temp_res):
@@ -40,22 +46,27 @@ def add_additional_properties(embed_res, user_id, character_name):
         
         embed_res.set_thumbnail(url=temp_res)
 
+    # checks if the user has set proficiencies
     temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/proficiencies/").get()
     if (temp_res != None):
         embed_res.add_field(name="Proficiencies", value=temp_res, inline=False)
 
+    # checks if the character has a race
     temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/race/").get()
     if (temp_res != None):
         embed_res.add_field(name="Race", value=temp_res, inline=True)
     
+    # checks if the character has a class
     temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/class/").get()
     if (temp_res != None):
         embed_res.add_field(name="Class", value=temp_res, inline=True)
 
+    # checks if the character has a alignment
     temp_res = db.reference("/users/" + str(user_id) + "/" + character_name + "/alignment/").get()
     if (temp_res != None):
         embed_res.add_field(name="Alignment", value=temp_res, inline=False)
     
+    # checks if the character has money
     money_types = ["platinum", "gold", "silver", "copper"]
     money_types_for_printing = ["Platinum", "Gold", "Silver", "Copper"]
     money_res = ""
@@ -83,7 +94,8 @@ def add_additional_properties(embed_res, user_id, character_name):
 
     return embed_res
 
-def build_spell_embed(character_name, user_id):
+# builds spellbook embed 
+def build_spellbook_embed(character_name, user_id):
     base_ref = db.reference("/users/" + str(user_id))
     character_spells = "Spells for " + character_name
 
@@ -99,7 +111,17 @@ def build_spell_embed(character_name, user_id):
     for level in SPELL_LEVELS:
         spells_for_level = base_ref.child(character_name).child("spells").child(level).get()
         if (spells_for_level != "empty"):
-            embed_res.add_field(name=level, value=spells_for_level, inline=False)
+            res_string = ""
+            count = 0
+            for spell in spells_for_level:
+                res_string += spell
+
+                if (count != len(spells_for_level) - 1):
+                    res_string += ", "
+
+                count += 1
+
+            embed_res.add_field(name=level, value=res_string, inline=False)
     
     return embed_res
 
