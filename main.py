@@ -7,31 +7,12 @@ import traceback
 from dotenv import load_dotenv
 from parse_cmd import parse
 
-"""
-Adventurer Companion v0.05
-A D&D helper bot for Discord
-
-Thanks for taking the time to read my code :)
-I mainly wrote this as a fun project in my spare time 
-as well as a way to learn more about Python and how to 
-write a bot for Discord. I've written a similar application
-in Kotlin for Android devices, and when I decided I wanted to
-learn how to write a Discord bot, I thought my D&D app 
-would be a good thing to port over. 
-
-If you'd like to take a look at the documentation, check
-README.md or head to my GitHub: github.com/jamesw98/dnd-bot,
-but if you are reading this, you are probably already coming
-from GitHub
-"""
-
 load_dotenv()
 
 TOKEN = os.getenv('TOKEN')
 client = discord.Client()
 
 # Features to add
-# TODO make search results embeds 
 # TODO add more things to be able to search (this should be easy, save for rainy day)
 
 # Bugs to fix
