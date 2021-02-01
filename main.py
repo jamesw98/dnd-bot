@@ -13,6 +13,7 @@ TOKEN = os.getenv('TOKEN')
 client = discord.Client()
 
 # Features to add
+# TODO switch all messages to embeds
 # TODO add more things to be able to search (this should be easy, save for rainy day)
 
 # Bugs to fix
@@ -36,7 +37,7 @@ async def on_message(msg):
 
     # if the message has the keyword, parse the command
     # and show the user the resulting message
-    if ("!dnd" in msg.content):
+    if (msg.content[0:4] == "!dnd"):
         result = parse(msg)
 
         if (type(result) == str):
